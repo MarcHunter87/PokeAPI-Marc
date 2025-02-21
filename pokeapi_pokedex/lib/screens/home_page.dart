@@ -12,11 +12,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<Pokemon> _pokemons = [];
   final int _numDePokemons = 20;
+  int _offset = 0;
   bool _cargandoPokemons = false;
   bool _cargandoMasPokemons = false;
-  int _offset = 0;
-  final ScrollController _controladorScroll = ScrollController();
   String _queryDeBusqueda = "";
+  final ScrollController _controladorScroll = ScrollController();
 
   @override
   void initState() {
