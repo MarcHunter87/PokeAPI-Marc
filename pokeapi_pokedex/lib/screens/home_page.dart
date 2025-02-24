@@ -114,8 +114,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                   }
                   if (index <= pokemonsBuscados.length) {
-                    final pokemon = pokemonsBuscados[index - 1];
-                    return PokemonCard(pokemon: pokemon);
+                    final pokemonObtenido = pokemonsBuscados[index - 1];
+                    return PokemonCard(pokemon: pokemonObtenido);
                   }
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16),
