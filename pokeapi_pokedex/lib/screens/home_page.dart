@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pokeapi_pokedex/modelos/pokemon.dart';
 import 'package:pokeapi_pokedex/servicios/pokeapi.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_card.dart';
+import 'package:pokeapi_pokedex/widgets/search_bar.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -115,29 +116,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     (_cargandoMasPokemons ? 1 : 0),
                 itemBuilder: (context, index) {
                   if (index == 0) {
-                    return Padding(
-                      padding: const EdgeInsets.only(
-                          right: 16, left: 16, top: 16, bottom: 8),
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: 'Buscar Pokémons',
-                          hintStyle: const TextStyle(
-                              color: Color.fromRGBO(189, 189, 189, 1)),
-                          fillColor: const Color.fromRGBO(48, 48, 48, 1),
-                          filled: true,
-                          prefixIcon:
-                              const Icon(Icons.search, color: Colors.white),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        style: const TextStyle(color: Colors.white),
-                        onChanged: (value) {
-                          setState(() {
-                            _queryDeBusqueda = value;
-                          });
-                        },
-                      ),
+                    return PokemonSearchBar(
+                      onSearch: (value) {
+                        setState(() {
+                          _queryDeBusqueda = value;
+                        });
+                      },
                     );
                   }
                   if (index <= pokemonsBuscados.length) {
