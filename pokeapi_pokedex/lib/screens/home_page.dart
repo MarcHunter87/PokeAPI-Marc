@@ -25,10 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _cargarPokemons();
     _controladorScroll.addListener(() {
-      if (_controladorScroll.position.pixels >=
-              _controladorScroll.position.maxScrollExtent - 200 &&
-          !_cargandoMasPokemons &&
-          !_cargandoPokemons) {
+      if (_controladorScroll.position.pixels >= _controladorScroll.position.maxScrollExtent - 200 && !_cargandoMasPokemons && !_cargandoPokemons) {
         _cargarMasPokemons();
       }
     });
@@ -40,8 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     try {
-      final pokemons =
-          await PokeAPI.obtenerPokemons(limit: _numDePokemons, offset: _offset);
+      final pokemons = await PokeAPI.obtenerPokemons(limit: _numDePokemons, offset: _offset);
       setState(() {
         _pokemons = pokemons;
         _cargandoPokemons = false;
@@ -61,8 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     try {
-      final nuevosPokemons =
-          await PokeAPI.obtenerPokemons(limit: _numDePokemons, offset: _offset);
+      final nuevosPokemons = await PokeAPI.obtenerPokemons(limit: _numDePokemons, offset: _offset);
       setState(() {
         _pokemons.addAll(nuevosPokemons);
         _cargandoMasPokemons = false;
@@ -84,18 +79,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  void dispose() {
-    _controladorScroll.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final pokemonsBuscados = _pokemons
-        .where((pokemon) => pokemon.name
-            .toLowerCase()
-            .startsWith(_queryDeBusqueda.toLowerCase()))
-        .toList();
+    final pokemonsBuscados = _pokemons.where((pokemon) => pokemon.name.toLowerCase().startsWith(_queryDeBusqueda.toLowerCase())).toList();
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -111,9 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onRefresh: _cargarOtraVezLosPokemons,
               child: ListView.builder(
                 controller: _controladorScroll,
-                itemCount: 1 +
-                    pokemonsBuscados.length +
-                    (_cargandoMasPokemons ? 1 : 0),
+                itemCount: 1 + pokemonsBuscados.length + (_cargandoMasPokemons ? 1 : 0),
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     return PokemonSearchBar(
