@@ -91,11 +91,13 @@ class _MyHomePageState extends State<MyHomePage> {
         surfaceTintColor: Colors.transparent,
       ),
       body: _cargandoPokemons
+      //Si es true, muestra la CircularProgressIndicator, si es false, muestra RefreshIndicator
           ? const Center(child: CircularProgressIndicator(color: Colors.red))
           : RefreshIndicator(
               onRefresh: _cargarOtraVezLosPokemons,
               child: ListView.builder(
                 controller: _controladorScroll,
+                //Si _cargandoMasPokemons es true, se suma 1 al itemCount para que se muestre el CircularProgressIndicator
                 itemCount: 1 + pokemonsBuscados.length + (_cargandoMasPokemons ? 1 : 0),
                 itemBuilder: (context, index) {
                   if (index == 0) {
@@ -111,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     final pokemon = pokemonsBuscados[index - 1];
                     return PokemonCard(pokemon: pokemon);
                   }
+                  //No se muestra a menos que _cargandoMasPokemons sea true
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16),
                     child: Center(
