@@ -13,8 +13,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Pokemon> _pokemons = [];
-  final int _numDePokemons = 20;
-  int _offset = 0;
+  final int _numDePokemonsBase = 20;
+  int _numPokemonsMostrados = 20;
   bool _cargandoPokemons = false;
   bool _cargandoMasPokemons = false;
   String _queryDeBusqueda = "";
@@ -27,9 +27,10 @@ class _MyHomePageState extends State<MyHomePage> {
     _controladorScroll.addListener(() {
       if (_controladorScroll.position.pixels >=
               _controladorScroll.position.maxScrollExtent - 200 &&
+          !_cargandoPokemons &&
           !_cargandoMasPokemons &&
-          !_cargandoPokemons) {
-        _cargarMasPokemons();
+          _numPokemonsMostrados < _pokemons.length) {
+        _mostrarMasPokemons();
       }
     });
   }
@@ -38,12 +39,11 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _cargandoPokemons = true;
     });
-
     try {
-      final pokemons =
-          await PokeAPI.obtenerPokemons(limit: _numDePokemons, offset: _offset);
+      final pokemons = await PokeAPI.obtenerPokemons();
       setState(() {
         _pokemons = pokemons;
+        _numPokemonsMostrados = _numDePokemonsBase;
         _cargandoPokemons = false;
       });
     } catch (error) {
@@ -54,30 +54,22 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> _cargarMasPokemons() async {
+  Future<void> _mostrarMasPokemons() async {
     setState(() {
       _cargandoMasPokemons = true;
-      _offset += _numDePokemons;
     });
-
-    try {
-      final nuevosPokemons =
-          await PokeAPI.obtenerPokemons(limit: _numDePokemons, offset: _offset);
-      setState(() {
-        _pokemons.addAll(nuevosPokemons);
-        _cargandoMasPokemons = false;
-      });
-    } catch (error) {
-      setState(() {
-        _cargandoMasPokemons = false;
-      });
-      print('Error al cargar más pokémons: $error');
-    }
+    await Future.delayed(const Duration(milliseconds: 300));
+    setState(() {
+      _numPokemonsMostrados =
+          (_numPokemonsMostrados + _numDePokemonsBase) > _pokemons.length
+              ? _pokemons.length
+              : _numPokemonsMostrados + _numDePokemonsBase;
+      _cargandoMasPokemons = false;
+    });
   }
 
   Future<void> _cargarOtraVezLosPokemons() async {
     setState(() {
-      _offset = 0;
       _pokemons.clear();
     });
     await _cargarPokemons();
@@ -91,6 +83,9 @@ class _MyHomePageState extends State<MyHomePage> {
             .startsWith(_queryDeBusqueda.toLowerCase()))
         .toList();
 
+    final pokemonsMostrados =
+        pokemonsBuscados.take(_numPokemonsMostrados).toList();
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -100,15 +95,13 @@ class _MyHomePageState extends State<MyHomePage> {
         surfaceTintColor: Colors.transparent,
       ),
       body: _cargandoPokemons
-          //Si es true, muestra la CircularProgressIndicator, si es false, muestra RefreshIndicator
           ? const Center(child: CircularProgressIndicator(color: Colors.red))
           : RefreshIndicator(
               onRefresh: _cargarOtraVezLosPokemons,
               child: ListView.builder(
                 controller: _controladorScroll,
-                //Si _cargandoMasPokemons es true, se suma 1 al itemCount para que se muestre el CircularProgressIndicator
                 itemCount: 1 +
-                    pokemonsBuscados.length +
+                    pokemonsMostrados.length +
                     (_cargandoMasPokemons ? 1 : 0),
                 itemBuilder: (context, index) {
                   if (index == 0) {
@@ -116,15 +109,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       onSearch: (value) {
                         setState(() {
                           _queryDeBusqueda = value;
+                          _numPokemonsMostrados = _numDePokemonsBase;
                         });
                       },
                     );
                   }
-                  if (index <= pokemonsBuscados.length) {
-                    final pokemon = pokemonsBuscados[index - 1];
+                  if (index <= pokemonsMostrados.length) {
+                    final pokemon = pokemonsMostrados[index - 1];
                     return PokemonCard(pokemon: pokemon);
                   }
-                  //No se muestra a menos que _cargandoMasPokemons sea true
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16),
                     child: Center(
