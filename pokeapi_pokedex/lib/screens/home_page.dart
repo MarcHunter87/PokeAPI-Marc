@@ -105,6 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 _numPokemonsMostrados = _numDePokemonsBase;
               });
             },
+            scrollController: _controladorScroll,
           ),
           Expanded(
             child: _cargandoPokemons

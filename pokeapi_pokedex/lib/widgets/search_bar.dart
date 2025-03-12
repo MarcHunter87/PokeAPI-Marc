@@ -2,11 +2,19 @@ import 'package:flutter/material.dart';
 
 class PokemonSearchBar extends StatelessWidget {
   final Function(String) onSearch;
+  final ScrollController scrollController;
 
   const PokemonSearchBar({
     super.key,
     required this.onSearch,
+    required this.scrollController,
   });
+
+  void _handleSearch(String value) {
+    onSearch(value);
+    // Ir al inicio del scroll
+    scrollController.jumpTo(0);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +32,7 @@ class PokemonSearchBar extends StatelessWidget {
           ),
         ),
         style: const TextStyle(color: Colors.white),
-        onChanged: onSearch,
+        onChanged: _handleSearch,
       ),
     );
   }
