@@ -13,7 +13,7 @@ class PokemonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: const Color.fromRGBO(48, 48, 48, 1),
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),

@@ -29,6 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
               _controladorScroll.position.maxScrollExtent - 200 &&
           !_cargandoPokemons &&
           !_cargandoMasPokemons &&
+          _queryDeBusqueda.isEmpty &&
           _numPokemonsMostrados < _pokemons.length) {
         _mostrarMasPokemons();
       }
@@ -71,6 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _cargarOtraVezLosPokemons() async {
     setState(() {
       _pokemons.clear();
+      _queryDeBusqueda = "";
     });
     await _cargarPokemons();
   }
@@ -94,38 +96,43 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: const Color.fromRGBO(33, 33, 33, 1),
         surfaceTintColor: Colors.transparent,
       ),
-      body: _cargandoPokemons
-          ? const Center(child: CircularProgressIndicator(color: Colors.red))
-          : RefreshIndicator(
-              onRefresh: _cargarOtraVezLosPokemons,
-              child: ListView.builder(
-                controller: _controladorScroll,
-                itemCount: 1 +
-                    pokemonsMostrados.length +
-                    (_cargandoMasPokemons ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return PokemonSearchBar(
-                      onSearch: (value) {
-                        setState(() {
-                          _queryDeBusqueda = value;
-                          _numPokemonsMostrados = _numDePokemonsBase;
-                        });
+      body: Column(
+        children: [
+          PokemonSearchBar(
+            onSearch: (value) {
+              setState(() {
+                _queryDeBusqueda = value;
+                _numPokemonsMostrados = _numDePokemonsBase;
+              });
+            },
+          ),
+          Expanded(
+            child: _cargandoPokemons
+                ? const Center(
+                    child: CircularProgressIndicator(color: Colors.red))
+                : RefreshIndicator(
+                    onRefresh: _cargarOtraVezLosPokemons,
+                    child: ListView.builder(
+                      controller: _controladorScroll,
+                      itemCount: pokemonsMostrados.length +
+                          (_cargandoMasPokemons ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index < pokemonsMostrados.length) {
+                          final pokemon = pokemonsMostrados[index];
+                          return PokemonCard(pokemon: pokemon);
+                        }
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Center(
+                              child:
+                                  CircularProgressIndicator(color: Colors.red)),
+                        );
                       },
-                    );
-                  }
-                  if (index <= pokemonsMostrados.length) {
-                    final pokemon = pokemonsMostrados[index - 1];
-                    return PokemonCard(pokemon: pokemon);
-                  }
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    child: Center(
-                        child: CircularProgressIndicator(color: Colors.red)),
-                  );
-                },
-              ),
-            ),
+                    ),
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }
