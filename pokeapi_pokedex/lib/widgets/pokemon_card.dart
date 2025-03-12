@@ -17,6 +17,7 @@ class PokemonCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
+      //sombras
       elevation: 5,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),

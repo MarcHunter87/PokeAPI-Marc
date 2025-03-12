@@ -51,7 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _cargandoPokemons = false;
       });
-      print('Error al cargar pokémons: $error');
     }
   }
 
