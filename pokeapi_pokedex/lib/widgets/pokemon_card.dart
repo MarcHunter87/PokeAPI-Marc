@@ -18,25 +18,41 @@ class PokemonCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       elevation: 5,
-      child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.network(
-            pokemon.imageUrl,
-            width: 60,
-            height: 60,
-            fit: BoxFit.cover,
-          ),
-        ),
-        title: Text(
-          pokemon.name,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: Colors.white,
-          ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                pokemon.imageUrl,
+                width: 60,
+                height: 60,
+                fit: BoxFit.cover,
+
+                //Seguro por si falla la imagen
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: 60,
+                    height: 60,
+                    color: Colors.grey,
+                    child: const Icon(Icons.error),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                pokemon.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
