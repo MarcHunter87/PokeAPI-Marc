@@ -13,7 +13,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Pokemon> _pokemons = [];
-  final int _limite = 20;
+  final int _numDePokemons = 20;
   int _offset = 0;
   bool _cargandoPokemons = false;
   bool _cargandoMasPokemons = false;
@@ -38,10 +38,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _cargarPokemons() async {
     setState(() {
       _cargandoPokemons = true;
-      _offset = 0;
     });
     try {
-      final pokemons = await PokeAPI.obtenerPokemons(offset: _offset);
+      final pokemons =
+          await PokeAPI.obtenerPokemons(limit: _numDePokemons, offset: _offset);
       setState(() {
         _pokemons = pokemons;
         _cargandoPokemons = false;
@@ -58,11 +58,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       _cargandoMasPokemons = true;
-      _offset += _limite;
+      _offset += _numDePokemons;
     });
 
     try {
-      final nuevosPokemons = await PokeAPI.obtenerPokemons(offset: _offset);
+      final nuevosPokemons =
+          await PokeAPI.obtenerPokemons(limit: _numDePokemons, offset: _offset);
       setState(() {
         _pokemons.addAll(nuevosPokemons);
         _cargandoMasPokemons = false;
@@ -84,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final pokemons = _pokemons
+    final pokemonsBuscados = _pokemons
         .where((pokemon) => pokemon.name
             .toLowerCase()
             .startsWith(_queryDeBusqueda.toLowerCase()))
@@ -116,11 +117,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     onRefresh: _cargarOtraVezLosPokemons,
                     child: ListView.builder(
                       controller: _controladorScroll,
-                      itemCount:
-                          pokemons.length + (_cargandoMasPokemons ? 1 : 0),
+                      itemCount: pokemonsBuscados.length +
+                          (_cargandoMasPokemons ? 1 : 0),
                       itemBuilder: (context, index) {
-                        if (index < pokemons.length) {
-                          final pokemon = pokemons[index];
+                        if (index < pokemonsBuscados.length) {
+                          final pokemon = pokemonsBuscados[index];
                           return PokemonCard(pokemon: pokemon);
                         }
                         return const Padding(
