@@ -15,4 +15,21 @@ class PokeAPI {
       throw Exception('Error al cargar los datos');
     }
   }
+
+  static Future<List<Pokemon>> buscarPokemons(String query) async {
+    final url = 'https://pokeapi.co/api/v2/pokemon?limit=1500';
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List results = data['results'];
+      final List<Pokemon> pokemonsBuscados =
+          results.map((json) => Pokemon.fromJson(json)).toList();
+      return pokemonsBuscados
+          .where((pokemon) =>
+              pokemon.name.toLowerCase().startsWith(query.toLowerCase()))
+          .toList();
+    } else {
+      throw Exception('Error al cargar los datos');
+    }
+  }
 }

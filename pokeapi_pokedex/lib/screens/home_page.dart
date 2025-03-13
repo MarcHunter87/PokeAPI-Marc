@@ -83,14 +83,31 @@ class _MyHomePageState extends State<MyHomePage> {
     await _cargarPokemons();
   }
 
+  Future<void> _buscarPokemons(String query) async {
+    if (query.isEmpty) {
+      await _cargarOtraVezLosPokemons();
+      return;
+    }
+
+    setState(() {
+      _cargandoPokemons = true;
+    });
+
+    try {
+      final pokemonsBuscados = await PokeAPI.buscarPokemons(query);
+      setState(() {
+        _pokemons = pokemonsBuscados;
+        _cargandoPokemons = false;
+      });
+    } catch (error) {
+      setState(() {
+        _cargandoPokemons = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final pokemonsBuscados = _pokemons
-        .where((pokemon) => pokemon.name
-            .toLowerCase()
-            .startsWith(_queryDeBusqueda.toLowerCase()))
-        .toList();
-
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -106,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 _queryDeBusqueda = value;
               });
+              _buscarPokemons(value);
             },
             scrollController: _controladorScroll,
           ),
@@ -117,11 +135,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     onRefresh: _cargarOtraVezLosPokemons,
                     child: ListView.builder(
                       controller: _controladorScroll,
-                      itemCount: pokemonsBuscados.length +
-                          (_cargandoMasPokemons ? 1 : 0),
+                      itemCount:
+                          _pokemons.length + (_cargandoMasPokemons ? 1 : 0),
                       itemBuilder: (context, index) {
-                        if (index < pokemonsBuscados.length) {
-                          final pokemon = pokemonsBuscados[index];
+                        if (index < _pokemons.length) {
+                          final pokemon = _pokemons[index];
                           return PokemonCard(pokemon: pokemon);
                         }
                         return const Padding(
