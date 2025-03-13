@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _cargandoMasPokemons = true;
     });
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 200));
     setState(() {
       _numPokemonsMostrados =
           (_numPokemonsMostrados + _numDePokemonsBase) > _pokemons.length
