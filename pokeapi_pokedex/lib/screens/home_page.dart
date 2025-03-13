@@ -13,8 +13,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Pokemon> _pokemons = [];
-  final int _numDePokemonsBase = 20;
-  int _numPokemonsMostrados = 20;
+  final int _limite = 20;
+  int _offset = 0;
   bool _cargandoPokemons = false;
   bool _cargandoMasPokemons = false;
   String _queryDeBusqueda = "";
@@ -29,9 +29,8 @@ class _MyHomePageState extends State<MyHomePage> {
               _controladorScroll.position.maxScrollExtent - 200 &&
           !_cargandoPokemons &&
           !_cargandoMasPokemons &&
-          _queryDeBusqueda.isEmpty &&
-          _numPokemonsMostrados < _pokemons.length) {
-        _mostrarMasPokemons();
+          _queryDeBusqueda.isEmpty) {
+        _cargarMasPokemons();
       }
     });
   }
@@ -39,12 +38,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _cargarPokemons() async {
     setState(() {
       _cargandoPokemons = true;
+      _offset = 0;
     });
     try {
-      final pokemons = await PokeAPI.obtenerPokemons();
+      final pokemons = await PokeAPI.obtenerPokemons(offset: _offset);
       setState(() {
         _pokemons = pokemons;
-        _numPokemonsMostrados = _numDePokemonsBase;
         _cargandoPokemons = false;
       });
     } catch (error) {
@@ -54,24 +53,31 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> _mostrarMasPokemons() async {
+  Future<void> _cargarMasPokemons() async {
+    if (_cargandoMasPokemons) return;
+
     setState(() {
       _cargandoMasPokemons = true;
+      _offset += _limite;
     });
-    await Future.delayed(const Duration(milliseconds: 200));
-    setState(() {
-      _numPokemonsMostrados =
-          (_numPokemonsMostrados + _numDePokemonsBase) > _pokemons.length
-              ? _pokemons.length
-              : _numPokemonsMostrados + _numDePokemonsBase;
-      _cargandoMasPokemons = false;
-    });
+
+    try {
+      final nuevosPokemons = await PokeAPI.obtenerPokemons(offset: _offset);
+      setState(() {
+        _pokemons.addAll(nuevosPokemons);
+        _cargandoMasPokemons = false;
+      });
+    } catch (error) {
+      setState(() {
+        _cargandoMasPokemons = false;
+      });
+    }
   }
 
   Future<void> _cargarOtraVezLosPokemons() async {
     setState(() {
+      _offset = 0;
       _pokemons.clear();
-      _queryDeBusqueda = "";
     });
     await _cargarPokemons();
   }
@@ -83,8 +89,6 @@ class _MyHomePageState extends State<MyHomePage> {
             .toLowerCase()
             .startsWith(_queryDeBusqueda.toLowerCase()))
         .toList();
-
-    final pokemonsMostrados = pokemons.take(_numPokemonsMostrados).toList();
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -100,7 +104,6 @@ class _MyHomePageState extends State<MyHomePage> {
             onSearch: (value) {
               setState(() {
                 _queryDeBusqueda = value;
-                _numPokemonsMostrados = _numDePokemonsBase;
               });
             },
             scrollController: _controladorScroll,
@@ -113,11 +116,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     onRefresh: _cargarOtraVezLosPokemons,
                     child: ListView.builder(
                       controller: _controladorScroll,
-                      itemCount: pokemonsMostrados.length +
-                          (_cargandoMasPokemons ? 1 : 0),
+                      itemCount:
+                          pokemons.length + (_cargandoMasPokemons ? 1 : 0),
                       itemBuilder: (context, index) {
-                        if (index < pokemonsMostrados.length) {
-                          final pokemon = pokemonsMostrados[index];
+                        if (index < pokemons.length) {
+                          final pokemon = pokemons[index];
                           return PokemonCard(pokemon: pokemon);
                         }
                         return const Padding(
