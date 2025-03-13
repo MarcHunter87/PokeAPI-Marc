@@ -78,14 +78,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final pokemonsBuscados = _pokemons
+    final pokemons = _pokemons
         .where((pokemon) => pokemon.name
             .toLowerCase()
             .startsWith(_queryDeBusqueda.toLowerCase()))
         .toList();
 
-    final pokemonsMostrados =
-        pokemonsBuscados.take(_numPokemonsMostrados).toList();
+    final pokemonsMostrados = pokemons.take(_numPokemonsMostrados).toList();
 
     return Scaffold(
       backgroundColor: Colors.black,
