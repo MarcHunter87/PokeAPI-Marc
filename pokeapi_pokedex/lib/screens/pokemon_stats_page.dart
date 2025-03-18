@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokeapi_pokedex/modelos/pokemon.dart';
 import 'package:pokeapi_pokedex/servicios/pokeapi.dart';
-import 'package:pokeapi_pokedex/servicios/color_tipo.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_type_icon.dart';
 
 class PokemonStatsPage extends StatefulWidget {
@@ -120,7 +119,7 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: _pokemon!.types!
+                    children: _pokemon!.types
                         .map((type) => Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 4),
