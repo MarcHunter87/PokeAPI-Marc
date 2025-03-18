@@ -22,7 +22,6 @@ class PokemonsFavoritos {
         continue;
       }
     }
-
     return pokemons;
   }
 
