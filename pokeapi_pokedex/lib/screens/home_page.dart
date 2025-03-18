@@ -4,6 +4,7 @@ import 'package:pokeapi_pokedex/servicios/pokeapi.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_card.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_grid_card.dart';
 import 'package:pokeapi_pokedex/widgets/search_bar.dart';
+import 'package:pokeapi_pokedex/servicios/pokemons_favoritos.dart';
 
 class MyHomePage extends StatefulWidget {
   final Function toggleTheme;
@@ -28,6 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _queryDeBusqueda = "";
   final ScrollController _controladorScroll = ScrollController();
   bool _vistaEnCuadricula = false;
+  bool _mostrandoFavoritos = false;
 
   @override
   void initState() {
@@ -38,7 +40,8 @@ class _MyHomePageState extends State<MyHomePage> {
               _controladorScroll.position.maxScrollExtent - 200 &&
           !_cargandoPokemons &&
           !_cargandoMasPokemons &&
-          _queryDeBusqueda.isEmpty) {
+          _queryDeBusqueda.isEmpty &&
+          !_mostrandoFavoritos) {
         _cargarMasPokemons();
       }
     });
@@ -62,8 +65,54 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _cargarPokemonsFavoritos() async {
+    setState(() {
+      _cargandoPokemons = true;
+      _mostrandoFavoritos = true;
+      _queryDeBusqueda = "";
+      _pokemons = [];
+    });
+
+    try {
+      final favoritos = await PokemonsFavoritos.obtenerPokemonsFavoritos();
+      if (mounted) {
+        setState(() {
+          _pokemons = favoritos;
+          _cargandoPokemons = false;
+        });
+
+        if (favoritos.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No tienes Pokémon favoritos guardados'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() {
+          _cargandoPokemons = false;
+          _mostrandoFavoritos = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Error al cargar los Pokémon favoritos'),
+            backgroundColor: Colors.red,
+            action: SnackBarAction(
+              label: 'Reintentar',
+              textColor: Colors.white,
+              onPressed: _cargarPokemonsFavoritos,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _cargarMasPokemons() async {
-    if (_cargandoMasPokemons) return;
+    if (_cargandoMasPokemons || _mostrandoFavoritos) return;
 
     setState(() {
       _cargandoMasPokemons = true;
@@ -88,6 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _offset = 0;
       _pokemons.clear();
+      _mostrandoFavoritos = false;
     });
     await _cargarPokemons();
   }
@@ -100,6 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       _cargandoPokemons = true;
+      _mostrandoFavoritos = false;
     });
 
     try {
@@ -131,6 +182,19 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         surfaceTintColor: Colors.transparent,
         actions: [
+          IconButton(
+            icon: Icon(
+              _mostrandoFavoritos ? Icons.favorite : Icons.favorite_border,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              if (_mostrandoFavoritos) {
+                _cargarOtraVezLosPokemons();
+              } else {
+                _cargarPokemonsFavoritos();
+              }
+            },
+          ),
           IconButton(
             icon: Icon(
               _vistaEnCuadricula ? Icons.grid_view : Icons.view_list,

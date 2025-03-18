@@ -3,8 +3,9 @@ import 'package:pokeapi_pokedex/modelos/pokemon.dart';
 import 'package:pokeapi_pokedex/screens/pokemon_stats_page.dart';
 import 'package:pokeapi_pokedex/servicios/color_tipo.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_type_icon.dart';
+import 'package:pokeapi_pokedex/servicios/pokemons_favoritos.dart';
 
-class PokemonCard extends StatelessWidget {
+class PokemonCard extends StatefulWidget {
   final Pokemon pokemon;
   final Function toggleTheme;
   final bool isDarkMode;
@@ -17,6 +18,38 @@ class PokemonCard extends StatelessWidget {
   });
 
   @override
+  State<PokemonCard> createState() => _PokemonCardState();
+}
+
+class _PokemonCardState extends State<PokemonCard> {
+  bool _esFavorito = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _actualizarEstadoFavorito();
+  }
+
+  Future<void> _actualizarEstadoFavorito() async {
+    final esFav =
+        await PokemonsFavoritos.comprobarSiEsFavorito(widget.pokemon.name);
+    setState(() {
+      _esFavorito = esFav;
+    });
+  }
+
+  Future<void> _toggleFavorite() async {
+    if (_esFavorito) {
+      await PokemonsFavoritos.eliminarPokemonFavorito(widget.pokemon.name);
+    } else {
+      await PokemonsFavoritos.agregarPokemonFavorito(widget.pokemon);
+    }
+    setState(() {
+      _esFavorito = !_esFavorito;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -24,9 +57,9 @@ class PokemonCard extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => PokemonStatsPage(
-              name: pokemon.name,
-              toggleTheme: toggleTheme,
-              isDarkMode: isDarkMode,
+              name: widget.pokemon.name,
+              toggleTheme: widget.toggleTheme,
+              isDarkMode: widget.isDarkMode,
             ),
           ),
         );
@@ -37,9 +70,11 @@ class PokemonCard extends StatelessWidget {
         color: Colors.transparent,
         child: Container(
           decoration: ColorTipo.obtenerTransparencia(
-            pokemon.types.first,
-            isDarkMode: isDarkMode,
-            segundoTipo: pokemon.types.length > 1 ? pokemon.types[1] : null,
+            widget.pokemon.types.first,
+            isDarkMode: widget.isDarkMode,
+            segundoTipo: widget.pokemon.types.length > 1
+                ? widget.pokemon.types[1]
+                : null,
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -48,7 +83,7 @@ class PokemonCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.network(
-                    pokemon.imageUrl,
+                    widget.pokemon.imageUrl,
                     width: 60,
                     height: 60,
                     fit: BoxFit.contain,
@@ -69,20 +104,22 @@ class PokemonCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        pokemon.name,
+                        widget.pokemon.name,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: isDarkMode ? Colors.white : Colors.black87,
+                              color: widget.isDarkMode
+                                  ? Colors.white
+                                  : Colors.black87,
                             ),
                       ),
                       const SizedBox(height: 4),
                       Row(
-                        children: pokemon.types
+                        children: widget.pokemon.types
                             .map((tipo) => Padding(
                                   padding: const EdgeInsets.only(right: 8),
                                   child: PokemonTypeIcon(
                                     tipo: tipo,
-                                    isDarkMode: isDarkMode,
+                                    isDarkMode: widget.isDarkMode,
                                     small: true,
                                     simple: true,
                                   ),
@@ -92,9 +129,15 @@ class PokemonCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right,
-                  color: ColorTipo.obtenerColorTipo(pokemon.types.first),
+                IconButton(
+                  icon: Icon(
+                    _esFavorito ? Icons.favorite : Icons.favorite_border,
+                    color: _esFavorito
+                        ? ColorTipo.obtenerColorTipo(widget.pokemon.types.first)
+                        : ColorTipo.obtenerColorTipo(widget.pokemon.types.first)
+                            .withOpacity(0.5),
+                  ),
+                  onPressed: _toggleFavorite,
                 ),
               ],
             ),
