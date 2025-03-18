@@ -22,12 +22,18 @@ class PokemonCard extends StatelessWidget {
         );
       },
       child: Card(
-        color: const Color.fromRGBO(48, 48, 48, 1),
+        color: Theme.of(context).cardColor,
         margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Theme.of(context).dividerColor
+                : Colors.transparent,
+            width: 1,
+          ),
         ),
-        elevation: 5,
+        elevation: 2,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           child: Row(
@@ -47,8 +53,9 @@ class PokemonCard extends StatelessWidget {
                       return Container(
                         width: 60,
                         height: 60,
-                        color: Colors.grey,
-                        child: const Icon(Icons.error),
+                        color: Colors.grey[300],
+                        child: Icon(Icons.error,
+                            color: Theme.of(context).colorScheme.error),
                       );
                     },
                   ),
@@ -58,11 +65,9 @@ class PokemonCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   pokemon.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
             ],

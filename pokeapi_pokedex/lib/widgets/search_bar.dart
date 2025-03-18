@@ -22,15 +22,35 @@ class PokemonSearchBar extends StatelessWidget {
       child: TextField(
         decoration: InputDecoration(
           hintText: 'Buscar Pokémons',
-          hintStyle: const TextStyle(color: Color.fromRGBO(189, 189, 189, 1)),
-          fillColor: const Color.fromRGBO(48, 48, 48, 1),
+          hintStyle: TextStyle(color: Theme.of(context).hintColor),
+          fillColor: Theme.of(context).cardColor,
           filled: true,
-          prefixIcon: const Icon(Icons.search, color: Colors.white),
+          prefixIcon:
+              Icon(Icons.search, color: Theme.of(context).iconTheme.color),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Theme.of(context).dividerColor
+                  : Colors.transparent,
+              width: 1.5,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Theme.of(context).dividerColor
+                  : Colors.transparent,
+              width: 1.5,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Theme.of(context).primaryColor),
           ),
         ),
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
         onChanged: _handleSearch,
       ),
     );

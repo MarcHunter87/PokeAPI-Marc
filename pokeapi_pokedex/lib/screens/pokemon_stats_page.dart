@@ -107,18 +107,23 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           widget.name.toUpperCase(),
-          style: const TextStyle(color: Colors.white),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
         ),
-        backgroundColor: const Color.fromRGBO(33, 33, 33, 1),
-        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        iconTheme: Theme.of(context).appBarTheme.iconTheme,
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Colors.red),
+          ? Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary,
+              ),
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.only(right: 16, left: 16, bottom: 15),
@@ -131,11 +136,10 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
                   ),
                   Text(
                     _pokemon!.name.toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -159,7 +163,16 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
                   ),
                   const SizedBox(height: 16),
                   Card(
-                    color: const Color.fromRGBO(48, 48, 48, 1),
+                    color: Theme.of(context).cardColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Theme.of(context).dividerColor
+                            : Colors.transparent,
+                        width: 1.5,
+                      ),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Row(
@@ -167,35 +180,39 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
                         children: [
                           Column(
                             children: [
-                              const Text(
+                              Text(
                                 'Altura',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 '${_pokemon!.height} dm',
-                                style: const TextStyle(color: Colors.white),
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ],
                           ),
                           Column(
                             children: [
-                              const Text(
+                              Text(
                                 'Peso',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 '${_pokemon!.weight} hg',
-                                style: const TextStyle(color: Colors.white),
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ],
                           ),
@@ -204,21 +221,27 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Estadísticas Base',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   ..._pokemon!.stats!.entries.map((stat) => Container(
                         margin: const EdgeInsets.symmetric(vertical: 4),
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: const Color.fromRGBO(48, 48, 48, 1),
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Theme.of(context).dividerColor
+                                    : Colors.transparent,
+                            width: 1.5,
+                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,17 +251,21 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
                               children: [
                                 Text(
                                   traducirNombreEstadisticas(stat.key),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                 ),
                                 Text(
                                   stat.value.toString(),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
                               ],
                             ),
@@ -247,7 +274,10 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
                               borderRadius: BorderRadius.circular(4),
                               child: LinearProgressIndicator(
                                 value: stat.value / 255,
-                                backgroundColor: Colors.grey[800],
+                                backgroundColor: Theme.of(context).brightness ==
+                                        Brightness.light
+                                    ? Colors.grey[200]
+                                    : Colors.grey[800],
                                 valueColor: AlwaysStoppedAnimation<Color>(
                                     conseguirColorEstadisticas(stat.value)),
                                 minHeight: 8,

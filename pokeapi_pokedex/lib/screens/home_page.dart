@@ -5,7 +5,14 @@ import 'package:pokeapi_pokedex/widgets/pokemon_card.dart';
 import 'package:pokeapi_pokedex/widgets/search_bar.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  final Function toggleTheme;
+  final bool isDarkMode;
+
+  const MyHomePage({
+    super.key,
+    required this.toggleTheme,
+    required this.isDarkMode,
+  });
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -109,12 +116,28 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('POKÉDEX', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'POKÉDEX',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
-        backgroundColor: const Color.fromRGBO(33, 33, 33, 1),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         surfaceTintColor: Colors.transparent,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              icon:
+                  Icon(widget.isDarkMode ? Icons.dark_mode : Icons.light_mode),
+              onPressed: () => widget.toggleTheme(),
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
