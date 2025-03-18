@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pokeapi_pokedex/modelos/pokemon.dart';
 import 'package:pokeapi_pokedex/servicios/pokeapi.dart';
+import 'package:pokeapi_pokedex/servicios/color_tipo.dart';
+import 'package:pokeapi_pokedex/widgets/pokemon_type_icon.dart';
 
 class PokemonStatsPage extends StatefulWidget {
   final String name;
@@ -68,49 +70,6 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
     return Colors.green;
   }
 
-  Color _conseguirColorTipo(String tipo) {
-    switch (tipo.toLowerCase()) {
-      case 'normal':
-        return const Color.fromRGBO(189, 189, 189, 1);
-      case 'fire':
-        return Colors.red;
-      case 'water':
-        return Colors.blue;
-      case 'grass':
-        return Colors.green;
-      case 'electric':
-        return Colors.yellow;
-      case 'ice':
-        return Colors.cyan;
-      case 'fighting':
-        return const Color.fromRGBO(245, 124, 0, 1);
-      case 'poison':
-        return Colors.purple;
-      case 'ground':
-        return Colors.brown;
-      case 'flying':
-        return Colors.indigo;
-      case 'psychic':
-        return Colors.pink;
-      case 'bug':
-        return Colors.lightGreen;
-      case 'rock':
-        return Colors.grey;
-      case 'ghost':
-        return Colors.deepPurple;
-      case 'dark':
-        return const Color.fromRGBO(66, 66, 66, 1);
-      case 'dragon':
-        return const Color.fromRGBO(48, 63, 159, 1);
-      case 'steel':
-        return Colors.blueGrey;
-      case 'fairy':
-        return Colors.pinkAccent;
-      default:
-        return Colors.grey;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,7 +86,7 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
         iconTheme: Theme.of(context).appBarTheme.iconTheme,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: const EdgeInsets.only(right: 8),
             child: IconButton(
               icon:
                   Icon(widget.isDarkMode ? Icons.dark_mode : Icons.light_mode),
@@ -165,15 +124,10 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
                         .map((type) => Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 4),
-                              child: Chip(
-                                label: Text(
-                                  type.toUpperCase(),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                backgroundColor: _conseguirColorTipo(type),
+                              child: PokemonTypeIcon(
+                                tipo: type,
+                                isDarkMode: widget.isDarkMode,
+                                simple: false,
                               ),
                             ))
                         .toList(),

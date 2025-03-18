@@ -10,7 +10,36 @@ class PokeAPI {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final List results = data['results'];
-      return results.map((json) => Pokemon.fromJson(json)).toList();
+
+      final datosPokemons = results.map((result) async {
+        final pokemonUrl = result['url'];
+        final pokemonResponse = await http.get(Uri.parse(pokemonUrl));
+        if (pokemonResponse.statusCode == 200) {
+          final pokemonData = json.decode(pokemonResponse.body);
+          return {
+            'name': result['name'],
+            'id': pokemonData['id'].toString(),
+            'types': (pokemonData['types'] as List)
+                .map((t) => t['type']['name'].toString())
+                .toList(),
+          };
+        }
+        return {
+          'name': result['name'],
+          'id': result['url'].split('/')[result['url'].split('/').length - 2],
+          'types': ['normal'],
+        };
+      });
+
+      final pokemons = await Future.wait(datosPokemons);
+      return pokemons
+          .map((data) => Pokemon(
+                name: data['name'],
+                imageUrl:
+                    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data['id']}.png',
+                types: data['types'],
+              ))
+          .toList();
     } else {
       throw Exception('Error al cargar los datos');
     }
@@ -22,11 +51,41 @@ class PokeAPI {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final List results = data['results'];
-      final List<Pokemon> pokemonsBuscados =
-          results.map((json) => Pokemon.fromJson(json)).toList();
-      return pokemonsBuscados
-          .where((pokemon) =>
-              pokemon.name.toLowerCase().startsWith(query.toLowerCase()))
+      final pokemonsFiltrados = results
+          .where((result) => result['name']
+              .toString()
+              .toLowerCase()
+              .startsWith(query.toLowerCase()))
+          .toList();
+
+      final datosPokemons = pokemonsFiltrados.map((result) async {
+        final pokemonUrl = result['url'];
+        final pokemonResponse = await http.get(Uri.parse(pokemonUrl));
+        if (pokemonResponse.statusCode == 200) {
+          final pokemonData = json.decode(pokemonResponse.body);
+          return {
+            'name': result['name'],
+            'id': pokemonData['id'].toString(),
+            'types': (pokemonData['types'] as List)
+                .map((t) => t['type']['name'].toString())
+                .toList(),
+          };
+        }
+        return {
+          'name': result['name'],
+          'id': result['url'].split('/')[result['url'].split('/').length - 2],
+          'types': ['normal'],
+        };
+      });
+
+      final pokemons = await Future.wait(datosPokemons);
+      return pokemons
+          .map((data) => Pokemon(
+                name: data['name'],
+                imageUrl:
+                    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data['id']}.png',
+                types: data['types'],
+              ))
           .toList();
     } else {
       throw Exception('Error al cargar los datos');

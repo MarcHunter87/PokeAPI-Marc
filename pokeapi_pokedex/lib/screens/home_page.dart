@@ -174,9 +174,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             controller: _controladorScroll,
                             padding: const EdgeInsets.all(8),
                             gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              childAspectRatio: 0.75,
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.85,
                               crossAxisSpacing: 8,
                               mainAxisSpacing: 8,
                             ),
