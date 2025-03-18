@@ -53,7 +53,7 @@ class ColorTipo {
         borderRadius: BorderRadius.circular(12),
         gradient: LinearGradient(
           colors: [
-            isDarkMode ? color.withOpacity(0.2) : color.withOpacity(0.9),
+            isDarkMode ? color.withOpacity(0.2) : color.withOpacity(0.7),
             isDarkMode
                 ? colorSecundario.withOpacity(0.2)
                 : colorSecundario.withOpacity(0.9),
@@ -62,16 +62,16 @@ class ColorTipo {
           end: Alignment.centerRight,
         ),
         border: Border.all(
-          color: isDarkMode ? color.withOpacity(0.2) : color.withOpacity(0.9),
+          color: isDarkMode ? color.withOpacity(0.2) : color.withOpacity(0.7),
           width: 1.5,
         ),
       );
     }
     return BoxDecoration(
       borderRadius: BorderRadius.circular(12),
-      color: isDarkMode ? color.withOpacity(0.2) : color.withOpacity(0.9),
+      color: isDarkMode ? color.withOpacity(0.2) : color.withOpacity(0.7),
       border: Border.all(
-        color: isDarkMode ? color.withOpacity(0.2) : color.withOpacity(0.9),
+        color: isDarkMode ? color.withOpacity(0.2) : color.withOpacity(0.7),
         width: 1.5,
       ),
     );
