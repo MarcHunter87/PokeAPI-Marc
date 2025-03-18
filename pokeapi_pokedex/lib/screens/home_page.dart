@@ -5,6 +5,8 @@ import 'package:pokeapi_pokedex/widgets/pokemon_card.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_grid_card.dart';
 import 'package:pokeapi_pokedex/widgets/search_bar.dart';
 import 'package:pokeapi_pokedex/servicios/pokemons_favoritos.dart';
+import 'package:pokeapi_pokedex/widgets/pokemon_type_filter.dart';
+import 'package:pokeapi_pokedex/servicios/color_tipo.dart';
 
 class MyHomePage extends StatefulWidget {
   final Function toggleTheme;
@@ -27,6 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _cargandoPokemons = false;
   bool _cargandoMasPokemons = false;
   String _queryDeBusqueda = "";
+  String? _tipoSeleccionado;
   final ScrollController _controladorScroll = ScrollController();
   bool _vistaEnCuadricula = false;
   bool _mostrandoFavoritos = false;
@@ -52,8 +55,16 @@ class _MyHomePageState extends State<MyHomePage> {
       _cargandoPokemons = true;
     });
     try {
-      final pokemons =
-          await PokeAPI.obtenerPokemons(limit: _numDePokemons, offset: _offset);
+      final pokemons = _tipoSeleccionado != null
+          ? await PokeAPI.obtenerPokemonsPorTipo(
+              _tipoSeleccionado!,
+              limit: _numDePokemons,
+              offset: _offset,
+            )
+          : await PokeAPI.obtenerPokemons(
+              limit: _numDePokemons,
+              offset: _offset,
+            );
       setState(() {
         _pokemons = pokemons;
         _cargandoPokemons = false;
@@ -120,8 +131,16 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     try {
-      final nuevosPokemons =
-          await PokeAPI.obtenerPokemons(limit: _numDePokemons, offset: _offset);
+      final nuevosPokemons = _tipoSeleccionado != null
+          ? await PokeAPI.obtenerPokemonsPorTipo(
+              _tipoSeleccionado!,
+              limit: _numDePokemons,
+              offset: _offset,
+            )
+          : await PokeAPI.obtenerPokemons(
+              limit: _numDePokemons,
+              offset: _offset,
+            );
       setState(() {
         _pokemons.addAll(nuevosPokemons);
         _cargandoMasPokemons = false;
@@ -151,6 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _cargandoPokemons = true;
       _mostrandoFavoritos = false;
+      _tipoSeleccionado = null;
     });
 
     try {
@@ -164,6 +184,17 @@ class _MyHomePageState extends State<MyHomePage> {
         _cargandoPokemons = false;
       });
     }
+  }
+
+  void _filtrarPorTipo(String? tipo) {
+    setState(() {
+      _tipoSeleccionado = tipo;
+      _offset = 0;
+      _pokemons.clear();
+      _mostrandoFavoritos = false;
+      _queryDeBusqueda = "";
+    });
+    _cargarPokemons();
   }
 
   @override
@@ -222,10 +253,16 @@ class _MyHomePageState extends State<MyHomePage> {
             onSearch: (value) {
               setState(() {
                 _queryDeBusqueda = value;
+                _tipoSeleccionado = null;
               });
               _buscarPokemons(value);
             },
             scrollController: _controladorScroll,
+          ),
+          PokemonTypeFilter(
+            tipoSeleccionado: _tipoSeleccionado,
+            onTipoSeleccionado: _filtrarPorTipo,
+            isDarkMode: widget.isDarkMode,
           ),
           Expanded(
             child: _cargandoPokemons

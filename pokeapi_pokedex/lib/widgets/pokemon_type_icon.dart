@@ -15,7 +15,7 @@ class PokemonTypeIcon extends StatelessWidget {
     this.simple = false,
   });
 
-  static const Map<String, String> _tiposTraducidos = {
+  static const Map<String, String> tiposTraducidos = {
     'normal': 'NORMAL',
     'fire': 'FUEGO',
     'water': 'AGUA',
@@ -37,7 +37,7 @@ class PokemonTypeIcon extends StatelessWidget {
   };
 
   String _traducirTipo(String tipo) {
-    return _tiposTraducidos[tipo.toLowerCase()] ?? tipo;
+    return tiposTraducidos[tipo.toLowerCase()] ?? tipo;
   }
 
   @override

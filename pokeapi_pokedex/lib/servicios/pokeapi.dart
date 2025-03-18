@@ -195,4 +195,63 @@ class PokeAPI {
       throw Exception('Error al cargar los datos del Pokémon');
     }
   }
+
+  static Future<List<Pokemon>> obtenerPokemonsPorTipo(String tipo,
+      {int limit = 20, int offset = 0}) async {
+    final url = 'https://beta.pokeapi.co/graphql/v1beta';
+    final query = '''
+      query pokemonsPorTipo(\$limit: Int!, \$offset: Int!, \$tipo: String!) {
+        pokemon_v2_pokemon(
+          limit: \$limit,
+          offset: \$offset,
+          where: {
+            pokemon_v2_pokemontypes: {
+              pokemon_v2_type: {
+                name: {_eq: \$tipo}
+              }
+            }
+          }
+        ) {
+          name
+          id
+          pokemon_v2_pokemontypes {
+            pokemon_v2_type {
+              name
+            }
+          }
+        }
+      }
+    ''';
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'query': query,
+        'variables': {
+          'limit': limit,
+          'offset': offset,
+          'tipo': tipo.toLowerCase()
+        }
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List pokemons = data['data']['pokemon_v2_pokemon'];
+
+      return pokemons
+          .map((pokemon) => Pokemon(
+                name: pokemon['name'],
+                imageUrl:
+                    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon['id']}.png',
+                types: (pokemon['pokemon_v2_pokemontypes'] as List)
+                    .map((type) => type['pokemon_v2_type']['name'].toString())
+                    .toList(),
+              ))
+          .toList();
+    } else {
+      throw Exception('Error al cargar los datos');
+    }
+  }
 }
