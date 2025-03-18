@@ -4,8 +4,15 @@ import 'package:pokeapi_pokedex/servicios/pokeapi.dart';
 
 class PokemonStatsPage extends StatefulWidget {
   final String name;
+  final Function toggleTheme;
+  final bool isDarkMode;
 
-  const PokemonStatsPage({super.key, required this.name});
+  const PokemonStatsPage({
+    super.key,
+    required this.name,
+    required this.toggleTheme,
+    required this.isDarkMode,
+  });
 
   @override
   State<PokemonStatsPage> createState() => _PokemonStatsPageState();
@@ -35,7 +42,7 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
     }
   }
 
-  String traducirNombreEstadisticas(String nombreEstadistica) {
+  String _traducirNombreEstadisticas(String nombreEstadistica) {
     switch (nombreEstadistica) {
       case 'hp':
         return 'HP';
@@ -54,14 +61,14 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
     }
   }
 
-  Color conseguirColorEstadisticas(int valor) {
+  Color _conseguirColorEstadisticas(int valor) {
     if (valor < 50) return Colors.red;
     if (valor < 100) return Colors.orange;
     if (valor < 150) return Colors.yellow;
     return Colors.green;
   }
 
-  Color conseguirColorTipo(String tipo) {
+  Color _conseguirColorTipo(String tipo) {
     switch (tipo.toLowerCase()) {
       case 'normal':
         return const Color.fromRGBO(189, 189, 189, 1);
@@ -118,6 +125,16 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
         ),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         iconTheme: Theme.of(context).appBarTheme.iconTheme,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: IconButton(
+              icon:
+                  Icon(widget.isDarkMode ? Icons.dark_mode : Icons.light_mode),
+              onPressed: () => widget.toggleTheme(),
+            ),
+          ),
+        ],
       ),
       body: _isLoading
           ? Center(
@@ -156,7 +173,7 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                backgroundColor: conseguirColorTipo(type),
+                                backgroundColor: _conseguirColorTipo(type),
                               ),
                             ))
                         .toList(),
@@ -250,7 +267,7 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  traducirNombreEstadisticas(stat.key),
+                                  _traducirNombreEstadisticas(stat.key),
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyLarge
@@ -279,7 +296,7 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
                                     ? Colors.grey[200]
                                     : Colors.grey[800],
                                 valueColor: AlwaysStoppedAnimation<Color>(
-                                    conseguirColorEstadisticas(stat.value)),
+                                    _conseguirColorEstadisticas(stat.value)),
                                 minHeight: 8,
                               ),
                             ),

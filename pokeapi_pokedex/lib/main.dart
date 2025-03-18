@@ -16,7 +16,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool _isDarkMode = true;
 
-  void toggleTheme() {
+  void cambiarTheme() {
     setState(() {
       _isDarkMode = !_isDarkMode;
     });
@@ -28,7 +28,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Pokedex',
       debugShowCheckedModeBanner: false,
       theme: _isDarkMode ? AppThemes.darkTheme : AppThemes.lightTheme,
-      home: MyHomePage(toggleTheme: toggleTheme, isDarkMode: _isDarkMode),
+      home: MyHomePage(toggleTheme: cambiarTheme, isDarkMode: _isDarkMode),
     );
   }
 }

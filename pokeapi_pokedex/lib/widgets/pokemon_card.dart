@@ -4,10 +4,14 @@ import 'package:pokeapi_pokedex/screens/pokemon_stats_page.dart';
 
 class PokemonCard extends StatelessWidget {
   final Pokemon pokemon;
+  final Function toggleTheme;
+  final bool isDarkMode;
 
   const PokemonCard({
     super.key,
     required this.pokemon,
+    required this.toggleTheme,
+    required this.isDarkMode,
   });
 
   @override
@@ -17,7 +21,11 @@ class PokemonCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PokemonStatsPage(name: pokemon.name),
+            builder: (context) => PokemonStatsPage(
+              name: pokemon.name,
+              toggleTheme: toggleTheme,
+              isDarkMode: isDarkMode,
+            ),
           ),
         );
       },
@@ -38,27 +46,24 @@ class PokemonCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           child: Row(
             children: [
-              Hero(
-                tag: pokemon.name,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    pokemon.imageUrl,
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.cover,
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  pokemon.imageUrl,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
 
-                    //Seguro por si falla la imagen
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 60,
-                        height: 60,
-                        color: Colors.grey[300],
-                        child: Icon(Icons.error,
-                            color: Theme.of(context).colorScheme.error),
-                      );
-                    },
-                  ),
+                  //Seguro por si falla la imagen
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: 60,
+                      height: 60,
+                      color: const Color.fromRGBO(224, 224, 224, 1),
+                      child: Icon(Icons.error,
+                          color: Theme.of(context).colorScheme.error),
+                    );
+                  },
                 ),
               ),
               const SizedBox(width: 16),

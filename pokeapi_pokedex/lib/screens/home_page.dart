@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pokeapi_pokedex/modelos/pokemon.dart';
 import 'package:pokeapi_pokedex/servicios/pokeapi.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_card.dart';
+import 'package:pokeapi_pokedex/widgets/pokemon_grid_card.dart';
 import 'package:pokeapi_pokedex/widgets/search_bar.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -26,6 +27,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _cargandoMasPokemons = false;
   String _queryDeBusqueda = "";
   final ScrollController _controladorScroll = ScrollController();
+  bool _vistaEnCuadricula = false;
 
   @override
   void initState() {
@@ -129,6 +131,17 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         surfaceTintColor: Colors.transparent,
         actions: [
+          IconButton(
+            icon: Icon(
+              _vistaEnCuadricula ? Icons.grid_view : Icons.view_list,
+              color: Theme.of(context).appBarTheme.iconTheme?.color,
+            ),
+            onPressed: () {
+              setState(() {
+                _vistaEnCuadricula = !_vistaEnCuadricula;
+              });
+            },
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: IconButton(
@@ -156,23 +169,57 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: CircularProgressIndicator(color: Colors.red))
                 : RefreshIndicator(
                     onRefresh: _cargarOtraVezLosPokemons,
-                    child: ListView.builder(
-                      controller: _controladorScroll,
-                      itemCount:
-                          _pokemons.length + (_cargandoMasPokemons ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index < _pokemons.length) {
-                          final pokemon = _pokemons[index];
-                          return PokemonCard(pokemon: pokemon);
-                        }
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                          child: Center(
-                              child:
-                                  CircularProgressIndicator(color: Colors.red)),
-                        );
-                      },
-                    ),
+                    child: _vistaEnCuadricula
+                        ? GridView.builder(
+                            controller: _controladorScroll,
+                            padding: const EdgeInsets.all(8),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              childAspectRatio: 0.75,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                            ),
+                            itemCount: _pokemons.length +
+                                (_cargandoMasPokemons ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (index < _pokemons.length) {
+                                final pokemon = _pokemons[index];
+                                return PokemonGridCard(
+                                  pokemon: pokemon,
+                                  toggleTheme: widget.toggleTheme,
+                                  isDarkMode: widget.isDarkMode,
+                                );
+                              }
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                        color: Colors.red)),
+                              );
+                            },
+                          )
+                        : ListView.builder(
+                            controller: _controladorScroll,
+                            itemCount: _pokemons.length +
+                                (_cargandoMasPokemons ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (index < _pokemons.length) {
+                                final pokemon = _pokemons[index];
+                                return PokemonCard(
+                                  pokemon: pokemon,
+                                  toggleTheme: widget.toggleTheme,
+                                  isDarkMode: widget.isDarkMode,
+                                );
+                              }
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                        color: Colors.red)),
+                              );
+                            },
+                          ),
                   ),
           ),
         ],
