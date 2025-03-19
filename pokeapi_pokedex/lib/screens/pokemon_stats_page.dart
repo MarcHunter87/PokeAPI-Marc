@@ -7,12 +7,14 @@ class PokemonStatsPage extends StatefulWidget {
   final String name;
   final Function toggleTheme;
   final bool isDarkMode;
+  final Pokemon? pokemonPreCargado;
 
   const PokemonStatsPage({
     super.key,
     required this.name,
     required this.toggleTheme,
     required this.isDarkMode,
+    this.pokemonPreCargado,
   });
 
   @override
@@ -26,7 +28,14 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
   @override
   void initState() {
     super.initState();
-    _cargarPokemon();
+    if (widget.pokemonPreCargado != null) {
+      setState(() {
+        _pokemon = widget.pokemonPreCargado;
+        _isLoading = false;
+      });
+    } else {
+      _cargarPokemon();
+    }
   }
 
   Future<void> _cargarPokemon() async {

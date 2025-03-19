@@ -6,8 +6,8 @@ import 'package:pokeapi_pokedex/widgets/pokemon_grid_card.dart';
 import 'package:pokeapi_pokedex/widgets/search_bar.dart';
 import 'package:pokeapi_pokedex/servicios/pokemons_favoritos.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_type_filter.dart';
-import 'package:pokeapi_pokedex/servicios/color_tipo.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_type_icon.dart';
+import 'package:pokeapi_pokedex/screens/pokemon_stats_page.dart';
 
 class MyHomePage extends StatefulWidget {
   final Function toggleTheme;
@@ -207,6 +207,42 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _mostrarPokemonAleatorio() async {
+    setState(() {
+      _cargandoPokemons = true;
+    });
+
+    late final Pokemon pokemon;
+
+    while (true) {
+      try {
+        final randomId = (DateTime.now().millisecondsSinceEpoch % 1500) + 1;
+        pokemon = await PokeAPI.obtenerPokemonPorId(randomId);
+        break;
+      } catch (error) {
+        continue;
+      }
+    }
+
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PokemonStatsPage(
+            name: pokemon.name,
+            toggleTheme: widget.toggleTheme,
+            isDarkMode: widget.isDarkMode,
+            pokemonPreCargado: pokemon,
+          ),
+        ),
+      );
+    }
+
+    setState(() {
+      _cargandoPokemons = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -223,6 +259,14 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         surfaceTintColor: Colors.transparent,
         actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.shuffle,
+              color: Colors.white,
+            ),
+            tooltip: 'Pokémon Aleatorio',
+            onPressed: _mostrarPokemonAleatorio,
+          ),
           IconButton(
             icon: Icon(
               _mostrandoFavoritos ? Icons.favorite : Icons.favorite_border,
