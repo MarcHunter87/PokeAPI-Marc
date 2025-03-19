@@ -23,7 +23,7 @@ class PokemonTypeFilter extends StatelessWidget {
         children: [
           FilterChip(
             label: Text(
-              'Todos',
+              'TODOS',
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ class PokemonTypeFilter extends StatelessWidget {
                     : color.withOpacity(0.7),
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );

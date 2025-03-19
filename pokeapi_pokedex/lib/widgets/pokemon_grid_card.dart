@@ -66,7 +66,7 @@ class _PokemonGridCardState extends State<PokemonGridCard> {
       },
       child: Card(
         elevation: 0,
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.surface,
         child: Container(
           decoration: ColorTipo.obtenerTransparencia(
             widget.pokemon.types.first,

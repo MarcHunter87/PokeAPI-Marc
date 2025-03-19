@@ -86,6 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _cargandoPokemons = true;
       _mostrandoFavoritos = true;
+      _tipoSeleccionado = null;
       _queryDeBusqueda = "";
       _pokemons = [];
     });
@@ -307,7 +308,6 @@ class _MyHomePageState extends State<MyHomePage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        centerTitle: true,
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         surfaceTintColor: Colors.transparent,
         actions: [
@@ -340,6 +340,9 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.white,
             ),
             onPressed: () {
+              setState(() {
+                _tipoSeleccionado = null;
+              });
               if (_mostrandoFavoritos) {
                 _cargarOtraVezLosPokemons();
               } else {
