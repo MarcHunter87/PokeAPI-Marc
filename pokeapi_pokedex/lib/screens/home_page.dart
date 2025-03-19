@@ -456,11 +456,12 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             scrollController: _controladorScroll,
           ),
-          PokemonTypeFilter(
-            tipoSeleccionado: _tipoSeleccionado,
-            onTipoSeleccionado: _filtrarPorTipo,
-            isDarkMode: widget.isDarkMode,
-          ),
+          if (_queryDeBusqueda.isEmpty)
+            PokemonTypeFilter(
+              tipoSeleccionado: _tipoSeleccionado,
+              onTipoSeleccionado: _filtrarPorTipo,
+              isDarkMode: widget.isDarkMode,
+            ),
           if (_pokemons.isEmpty && _mostrandoFavoritos)
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -473,6 +474,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 _tipoSeleccionado != null
                     ? 'No tienes Pokémons de tipo ${PokemonTypeIcon.tiposTraducidos[_tipoSeleccionado]?.toLowerCase() ?? _tipoSeleccionado} guardados en favoritos'
                     : 'No tienes Pokémons guardados en favoritos',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          if (_pokemons.isEmpty &&
+              !_mostrandoFavoritos &&
+              _queryDeBusqueda.isNotEmpty)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'No se encontraron Pokémons que empiecen con "$_queryDeBusqueda"',
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
