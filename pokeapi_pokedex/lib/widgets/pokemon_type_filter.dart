@@ -25,7 +25,7 @@ class PokemonTypeFilter extends StatelessWidget {
             label: Text(
               'Todos',
               style: TextStyle(
-                color: isDarkMode ? Colors.white : Colors.black87,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -36,12 +36,12 @@ class PokemonTypeFilter extends StatelessWidget {
               }
             },
             showCheckmark: false,
-            backgroundColor: isDarkMode
-                ? Colors.white.withOpacity(0.1)
-                : Colors.black.withOpacity(0.15),
-            selectedColor: isDarkMode
-                ? Colors.white.withOpacity(0.2)
-                : Colors.black.withOpacity(0.25),
+            backgroundColor:
+                Theme.of(context).colorScheme.surfaceContainerHighest,
+            selectedColor: Theme.of(context)
+                .colorScheme
+                .surfaceContainerHighest
+                .withOpacity(0.8),
           ),
           const SizedBox(width: 12),
           ...PokemonTypeIcon.tiposTraducidos.entries.map((entry) {
@@ -52,7 +52,7 @@ class PokemonTypeFilter extends StatelessWidget {
                 label: Text(
                   entry.value,
                   style: TextStyle(
-                    color: isDarkMode ? Colors.white : Colors.black87,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

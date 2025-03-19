@@ -67,7 +67,7 @@ class _PokemonCardState extends State<PokemonCard> {
       child: Card(
         margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         elevation: 0,
-        color: Colors.transparent,
+        color: Theme.of(context).colorScheme.surface,
         child: Container(
           decoration: ColorTipo.obtenerTransparencia(
             widget.pokemon.types.first,
@@ -91,7 +91,9 @@ class _PokemonCardState extends State<PokemonCard> {
                       return Container(
                         width: 60,
                         height: 60,
-                        color: Colors.grey[300],
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
                         child: Icon(Icons.error,
                             color: Theme.of(context).colorScheme.error),
                       );
@@ -107,9 +109,7 @@ class _PokemonCardState extends State<PokemonCard> {
                         widget.pokemon.name,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: widget.isDarkMode
-                                  ? Colors.white
-                                  : Colors.black87,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                       ),
                       const SizedBox(height: 4),

@@ -95,10 +95,8 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
         ],
       ),
       body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.primary,
-              ),
+          ? const Center(
+              child: CircularProgressIndicator(),
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.only(right: 16, left: 16, bottom: 15),

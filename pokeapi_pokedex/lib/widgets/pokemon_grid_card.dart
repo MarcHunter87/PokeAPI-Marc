@@ -66,7 +66,7 @@ class _PokemonGridCardState extends State<PokemonGridCard> {
       },
       child: Card(
         elevation: 0,
-        color: Colors.transparent,
+        color: Theme.of(context).colorScheme.background,
         child: Container(
           decoration: ColorTipo.obtenerTransparencia(
             widget.pokemon.types.first,
@@ -93,9 +93,8 @@ class _PokemonGridCardState extends State<PokemonGridCard> {
                                 .titleMedium
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: widget.isDarkMode
-                                      ? Colors.white
-                                      : Colors.black87,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
                                 ),
                           ),
                         ),
@@ -139,7 +138,9 @@ class _PokemonGridCardState extends State<PokemonGridCard> {
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
-                              color: Colors.grey[300],
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
                               child: Icon(Icons.error,
                                   color: Theme.of(context).colorScheme.error),
                             );

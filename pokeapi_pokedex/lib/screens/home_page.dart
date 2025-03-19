@@ -7,6 +7,7 @@ import 'package:pokeapi_pokedex/widgets/search_bar.dart';
 import 'package:pokeapi_pokedex/servicios/pokemons_favoritos.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_type_filter.dart';
 import 'package:pokeapi_pokedex/servicios/color_tipo.dart';
+import 'package:pokeapi_pokedex/widgets/pokemon_type_icon.dart';
 
 class MyHomePage extends StatefulWidget {
   final Function toggleTheme;
@@ -91,15 +92,6 @@ class _MyHomePageState extends State<MyHomePage> {
           _pokemons = favoritos;
           _cargandoPokemons = false;
         });
-
-        if (favoritos.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('No tienes Pokémon favoritos guardados'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
       }
     } catch (error) {
       if (mounted) {
@@ -107,17 +99,6 @@ class _MyHomePageState extends State<MyHomePage> {
           _cargandoPokemons = false;
           _mostrandoFavoritos = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Error al cargar los Pokémon favoritos'),
-            backgroundColor: Colors.red,
-            action: SnackBarAction(
-              label: 'Reintentar',
-              textColor: Colors.white,
-              onPressed: _cargarPokemonsFavoritos,
-            ),
-          ),
-        );
       }
     }
   }
@@ -189,12 +170,41 @@ class _MyHomePageState extends State<MyHomePage> {
   void _filtrarPorTipo(String? tipo) {
     setState(() {
       _tipoSeleccionado = tipo;
-      _offset = 0;
-      _pokemons.clear();
-      _mostrandoFavoritos = false;
-      _queryDeBusqueda = "";
+      if (_mostrandoFavoritos) {
+        _filtrarFavoritosPorTipo(tipo);
+      } else {
+        _offset = 0;
+        _pokemons.clear();
+        _queryDeBusqueda = "";
+        _cargarPokemons();
+      }
     });
-    _cargarPokemons();
+  }
+
+  void _filtrarFavoritosPorTipo(String? tipo) async {
+    if (tipo == null) {
+      _cargarPokemonsFavoritos();
+      return;
+    }
+
+    setState(() {
+      _cargandoPokemons = true;
+    });
+
+    try {
+      final favoritos = await PokemonsFavoritos.obtenerPokemonsFavoritos();
+      final pokemonsFiltrados =
+          favoritos.where((pokemon) => pokemon.types.contains(tipo)).toList();
+
+      setState(() {
+        _pokemons = pokemonsFiltrados;
+        _cargandoPokemons = false;
+      });
+    } catch (error) {
+      setState(() {
+        _cargandoPokemons = false;
+      });
+    }
   }
 
   @override
@@ -264,10 +274,25 @@ class _MyHomePageState extends State<MyHomePage> {
             onTipoSeleccionado: _filtrarPorTipo,
             isDarkMode: widget.isDarkMode,
           ),
+          if (_pokemons.isEmpty && _mostrandoFavoritos)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                _tipoSeleccionado != null
+                    ? 'No tienes Pokémons de tipo ${PokemonTypeIcon.tiposTraducidos[_tipoSeleccionado]?.toLowerCase() ?? _tipoSeleccionado} guardados en favoritos'
+                    : 'No tienes Pokémons guardados en favoritos',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+            ),
           Expanded(
             child: _cargandoPokemons
-                ? const Center(
-                    child: CircularProgressIndicator(color: Colors.red))
+                ? const Center(child: CircularProgressIndicator())
                 : RefreshIndicator(
                     onRefresh: _cargarOtraVezLosPokemons,
                     child: _vistaEnCuadricula
@@ -294,9 +319,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               }
                               return const Padding(
                                 padding: EdgeInsets.symmetric(vertical: 16),
-                                child: Center(
-                                    child: CircularProgressIndicator(
-                                        color: Colors.red)),
+                                child:
+                                    Center(child: CircularProgressIndicator()),
                               );
                             },
                           )
@@ -315,9 +339,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               }
                               return const Padding(
                                 padding: EdgeInsets.symmetric(vertical: 16),
-                                child: Center(
-                                    child: CircularProgressIndicator(
-                                        color: Colors.red)),
+                                child:
+                                    Center(child: CircularProgressIndicator()),
                               );
                             },
                           ),
