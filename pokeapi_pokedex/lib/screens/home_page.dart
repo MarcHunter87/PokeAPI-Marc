@@ -181,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _filtrarFavoritosPorTipo(String? tipo) async {
+  Future<void> _filtrarFavoritosPorTipo(String? tipo) async {
     if (tipo == null) {
       _cargarPokemonsFavoritos();
       return;
