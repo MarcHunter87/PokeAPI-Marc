@@ -34,6 +34,9 @@ class _MyHomePageState extends State<MyHomePage> {
   final ScrollController _controladorScroll = ScrollController();
   bool _vistaEnCuadricula = false;
   bool _mostrandoFavoritos = false;
+  bool _ordenAlfabetico = false;
+  String _letraActual = 'a';
+  final List<String> _letras = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
   @override
   void initState() {
@@ -43,10 +46,12 @@ class _MyHomePageState extends State<MyHomePage> {
       if (_controladorScroll.position.pixels >=
               _controladorScroll.position.maxScrollExtent - 200 &&
           !_cargandoPokemons &&
-          !_cargandoMasPokemons &&
-          _queryDeBusqueda.isEmpty &&
-          !_mostrandoFavoritos) {
-        _cargarMasPokemons();
+          !_cargandoMasPokemons) {
+        if (_ordenAlfabetico) {
+          _cargarSiguienteLetra();
+        } else if (_queryDeBusqueda.isEmpty && !_mostrandoFavoritos) {
+          _cargarMasPokemons();
+        }
       }
     });
   }
@@ -243,6 +248,53 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<void> _cargarPokemonsAlfabeticamente() async {
+    setState(() {
+      _cargandoPokemons = true;
+      _pokemons = [];
+    });
+
+    try {
+      final pokemonsDeLetra = await PokeAPI.buscarPokemons(_letraActual);
+      setState(() {
+        _pokemons = pokemonsDeLetra;
+        _cargandoPokemons = false;
+      });
+    } catch (error) {
+      setState(() {
+        _cargandoPokemons = false;
+      });
+    }
+  }
+
+  Future<void> _cargarSiguienteLetra() async {
+    if (!_ordenAlfabetico || _cargandoMasPokemons) return;
+
+    final currentIndex = _letras.indexOf(_letraActual);
+    if (currentIndex >= _letras.length - 1) return;
+
+    setState(() {
+      _cargandoMasPokemons = true;
+    });
+
+    try {
+      final siguienteLetra = _letras[currentIndex + 1];
+      final pokemonsDeLetra = await PokeAPI.buscarPokemons(siguienteLetra);
+
+      if (mounted) {
+        setState(() {
+          _pokemons.addAll(pokemonsDeLetra);
+          _letraActual = siguienteLetra;
+          _cargandoMasPokemons = false;
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _cargandoMasPokemons = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -264,8 +316,23 @@ class _MyHomePageState extends State<MyHomePage> {
               Icons.shuffle,
               color: Colors.white,
             ),
-            tooltip: 'Pokémon Aleatorio',
             onPressed: _mostrarPokemonAleatorio,
+          ),
+          IconButton(
+            icon: Icon(
+              _ordenAlfabetico ? Icons.sort_by_alpha : Icons.filter_list,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              setState(() {
+                _ordenAlfabetico = !_ordenAlfabetico;
+                if (_ordenAlfabetico) {
+                  _cargarPokemonsAlfabeticamente();
+                } else {
+                  _cargarOtraVezLosPokemons();
+                }
+              });
+            },
           ),
           IconButton(
             icon: Icon(

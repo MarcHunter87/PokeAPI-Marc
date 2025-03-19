@@ -50,7 +50,12 @@ class PokemonSearchBar extends StatelessWidget {
             borderSide: BorderSide(color: Theme.of(context).primaryColor),
           ),
         ),
-        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
+        cursorColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
+            : null,
+        style: TextStyle(
+          color: Theme.of(context).textTheme.bodyLarge?.color,
+        ),
         onChanged: _handleSearch,
       ),
     );
