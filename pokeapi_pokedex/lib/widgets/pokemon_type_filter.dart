@@ -41,7 +41,7 @@ class PokemonTypeFilter extends StatelessWidget {
             selectedColor: Theme.of(context)
                 .colorScheme
                 .surfaceContainerHighest
-                .withOpacity(0.8),
+                .withAlpha(204),
           ),
           const SizedBox(width: 12),
           ...PokemonTypeIcon.tiposTraducidos.entries.map((entry) {
@@ -63,12 +63,10 @@ class PokemonTypeFilter extends StatelessWidget {
                   }
                 },
                 showCheckmark: false,
-                backgroundColor: isDarkMode
-                    ? color.withOpacity(0.2)
-                    : color.withOpacity(0.4),
-                selectedColor: isDarkMode
-                    ? color.withOpacity(0.3)
-                    : color.withOpacity(0.7),
+                backgroundColor:
+                    isDarkMode ? color.withAlpha(51) : color.withAlpha(102),
+                selectedColor:
+                    isDarkMode ? color.withAlpha(77) : color.withAlpha(179),
               ),
             );
           }),

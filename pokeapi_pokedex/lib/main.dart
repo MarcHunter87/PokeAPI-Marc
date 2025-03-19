@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pokeapi_pokedex/screens/home_page.dart';
 import 'package:pokeapi_pokedex/themes/theme_data.dart';
+import 'package:pokeapi_pokedex/servicios/notification_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.init();
   runApp(const MyApp());
 }
 

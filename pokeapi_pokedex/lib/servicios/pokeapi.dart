@@ -3,39 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:pokeapi_pokedex/modelos/pokemon.dart';
 
 class PokeAPI {
-  // static Future<List<Pokemon>> obtenerPokemons(
-  //     {int limit = 20, int offset = 0}) async {
-  //   final url = 'https://pokeapi.co/api/v2/pokemon?limit=$limit&offset=$offset';
-  //   final response = await http.get(Uri.parse(url));
-  //   if (response.statusCode == 200) {
-  //     final data = json.decode(response.body);
-  //     final List results = data['results'];
-
-  //     final List<Future<Pokemon>> futures = results.map((result) async {
-  //       final pokemonUrl =
-  //           'https://pokeapi.co/api/v2/pokemon/${result['name']}';
-  //       final pokemonResponse = await http.get(Uri.parse(pokemonUrl));
-  //       if (pokemonResponse.statusCode == 200) {
-  //         final pokemonData = json.decode(pokemonResponse.body);
-  //         return Pokemon(
-  //           name: result['name'],
-  //           imageUrl:
-  //               'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonData['id']}.png',
-  //           types: (pokemonData['types'] as List)
-  //               .map((t) => t['type']['name'].toString())
-  //               .toList(),
-  //         );
-  //       }
-  //       throw Exception(
-  //           'Error al cargar los datos del Pokémon ${result['name']}');
-  //     }).toList();
-
-  //     return Future.wait(futures);
-  //   } else {
-  //     throw Exception('Error al cargar los datos');
-  //   }
-  // }
-
   static Future<List<Pokemon>> obtenerPokemons(
       {int limit = 20, int offset = 0}) async {
     final url = 'https://beta.pokeapi.co/graphql/v1beta';
@@ -80,45 +47,6 @@ class PokeAPI {
       throw Exception('Error al cargar los datos');
     }
   }
-
-  // static Future<List<Pokemon>> buscarPokemons(String query) async {
-  //   final url = 'https://pokeapi.co/api/v2/pokemon?limit=1500';
-  //   final response = await http.get(Uri.parse(url));
-  //   if (response.statusCode == 200) {
-  //     final data = json.decode(response.body);
-  //     final List results = data['results'];
-  //     final pokemonsBuscados = results
-  //         .where((result) => result['name']
-  //             .toString()
-  //             .toLowerCase()
-  //             .startsWith(query.toLowerCase()))
-  //         .toList();
-
-  //     final List<Future<Pokemon>> pokemons =
-  //         pokemonsBuscados.map((result) async {
-  //       final pokemonUrl =
-  //           'https://pokeapi.co/api/v2/pokemon/${result['name']}';
-  //       final pokemonResponse = await http.get(Uri.parse(pokemonUrl));
-  //       if (pokemonResponse.statusCode == 200) {
-  //         final pokemonData = json.decode(pokemonResponse.body);
-  //         return Pokemon(
-  //           name: result['name'],
-  //           imageUrl:
-  //               'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonData['id']}.png',
-  //           types: (pokemonData['types'] as List)
-  //               .map((t) => t['type']['name'].toString())
-  //               .toList(),
-  //         );
-  //       }
-  //       throw Exception(
-  //           'Error al cargar los datos del Pokémon ${result['name']}');
-  //     }).toList();
-
-  //     return Future.wait(pokemons);
-  //   } else {
-  //     throw Exception('Error al cargar los datos');
-  //   }
-  // }
 
   static Future<List<Pokemon>> buscarPokemons(String query) async {
     final url = 'https://beta.pokeapi.co/graphql/v1beta';

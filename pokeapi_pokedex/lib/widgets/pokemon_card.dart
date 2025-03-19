@@ -135,7 +135,7 @@ class _PokemonCardState extends State<PokemonCard> {
                     color: _esFavorito
                         ? ColorTipo.obtenerColorTipo(widget.pokemon.types.first)
                         : ColorTipo.obtenerColorTipo(widget.pokemon.types.first)
-                            .withOpacity(0.5),
+                            .withAlpha(128),
                   ),
                   onPressed: _toggleFavorite,
                 ),

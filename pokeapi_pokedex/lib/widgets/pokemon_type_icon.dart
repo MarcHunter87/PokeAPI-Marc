@@ -63,7 +63,7 @@ class PokemonTypeIcon extends StatelessWidget {
         vertical: small ? 2 : 4,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(isDarkMode ? 0.8 : 0.9),
+        color: color.withAlpha(isDarkMode ? 204 : 230),
         borderRadius: BorderRadius.circular(small ? 4 : 8),
       ),
       child: Text(

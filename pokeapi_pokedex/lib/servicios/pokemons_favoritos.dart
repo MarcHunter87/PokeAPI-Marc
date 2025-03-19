@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pokeapi_pokedex/modelos/pokemon.dart';
 import 'package:pokeapi_pokedex/servicios/pokeapi.dart';
+import 'package:pokeapi_pokedex/servicios/notification_service.dart';
 
 class PokemonsFavoritos {
   static const String _key = 'favorite_pokemons';
@@ -33,6 +35,8 @@ class PokemonsFavoritos {
       favoritos.add(pokemon.name);
       final String encoded = jsonEncode(favoritos);
       await prefs.setString(_key, encoded);
+
+      NotificationService.mostrarNotificacionPokemonFavorito(pokemon.name);
     }
   }
 

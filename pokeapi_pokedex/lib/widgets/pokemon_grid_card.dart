@@ -108,7 +108,7 @@ class _PokemonGridCardState extends State<PokemonGridCard> {
                                     widget.pokemon.types.first)
                                 : ColorTipo.obtenerColorTipo(
                                         widget.pokemon.types.first)
-                                    .withOpacity(0.5),
+                                    .withAlpha(128),
                             size: 20,
                           ),
                           constraints: const BoxConstraints(),

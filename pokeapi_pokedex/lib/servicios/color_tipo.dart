@@ -53,25 +53,25 @@ class ColorTipo {
         borderRadius: BorderRadius.circular(12),
         gradient: LinearGradient(
           colors: [
-            isDarkMode ? color.withOpacity(0.2) : color.withOpacity(0.7),
+            isDarkMode ? color.withAlpha(51) : color.withAlpha(179),
             isDarkMode
-                ? colorSecundario.withOpacity(0.2)
-                : colorSecundario.withOpacity(0.9),
+                ? colorSecundario.withAlpha(51)
+                : colorSecundario.withAlpha(230),
           ],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
         border: Border.all(
-          color: isDarkMode ? color.withOpacity(0.2) : color.withOpacity(0.7),
+          color: isDarkMode ? color.withAlpha(51) : color.withAlpha(179),
           width: 1.5,
         ),
       );
     }
     return BoxDecoration(
       borderRadius: BorderRadius.circular(12),
-      color: isDarkMode ? color.withOpacity(0.2) : color.withOpacity(0.7),
+      color: isDarkMode ? color.withAlpha(51) : color.withAlpha(179),
       border: Border.all(
-        color: isDarkMode ? color.withOpacity(0.2) : color.withOpacity(0.7),
+        color: isDarkMode ? color.withAlpha(51) : color.withAlpha(179),
         width: 1.5,
       ),
     );
