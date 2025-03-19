@@ -93,6 +93,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     try {
       final favoritos = await PokemonsFavoritos.obtenerPokemonsFavoritos();
+
+      if (_ordenAlfabetico) {
+        favoritos.sort((a, b) => a.name.compareTo(b.name));
+      }
+
       if (mounted) {
         setState(() {
           _pokemons = favoritos;
@@ -145,7 +150,12 @@ class _MyHomePageState extends State<MyHomePage> {
       _pokemons.clear();
       _mostrandoFavoritos = false;
     });
-    await _cargarPokemons();
+
+    if (_ordenAlfabetico) {
+      await _cargarPokemonsAlfabeticamente();
+    } else {
+      await _cargarPokemons();
+    }
   }
 
   Future<void> _buscarPokemons(String query) async {
@@ -178,6 +188,13 @@ class _MyHomePageState extends State<MyHomePage> {
       _tipoSeleccionado = tipo;
       if (_mostrandoFavoritos) {
         _filtrarFavoritosPorTipo(tipo);
+      } else if (_ordenAlfabetico) {
+        _pokemons.clear();
+        if (tipo == null) {
+          _cargarPokemonsAlfabeticamente();
+        } else {
+          _cargarPokemonsPorTipoAlfabeticamente(tipo);
+        }
       } else {
         _offset = 0;
         _pokemons.clear();
@@ -201,6 +218,10 @@ class _MyHomePageState extends State<MyHomePage> {
       final favoritos = await PokemonsFavoritos.obtenerPokemonsFavoritos();
       final pokemonsFiltrados =
           favoritos.where((pokemon) => pokemon.types.contains(tipo)).toList();
+
+      if (_ordenAlfabetico) {
+        pokemonsFiltrados.sort((a, b) => a.name.compareTo(b.name));
+      }
 
       setState(() {
         _pokemons = pokemonsFiltrados;
@@ -296,6 +317,27 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _cargarPokemonsPorTipoAlfabeticamente(String tipo) async {
+    setState(() {
+      _cargandoPokemons = true;
+      _pokemons = [];
+    });
+
+    try {
+      final pokemonsPorTipo = await PokeAPI.obtenerPokemonsPorTipo(tipo);
+      pokemonsPorTipo.sort((a, b) => a.name.compareTo(b.name));
+
+      setState(() {
+        _pokemons = pokemonsPorTipo;
+        _cargandoPokemons = false;
+      });
+    } catch (error) {
+      setState(() {
+        _cargandoPokemons = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -327,9 +369,27 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 _ordenAlfabetico = !_ordenAlfabetico;
                 if (_ordenAlfabetico) {
-                  _cargarPokemonsAlfabeticamente();
+                  if (_mostrandoFavoritos) {
+                    if (_tipoSeleccionado != null) {
+                      _filtrarFavoritosPorTipo(_tipoSeleccionado);
+                    } else {
+                      _cargarPokemonsFavoritos();
+                    }
+                  } else if (_tipoSeleccionado != null) {
+                    _cargarPokemonsPorTipoAlfabeticamente(_tipoSeleccionado!);
+                  } else {
+                    _cargarPokemonsAlfabeticamente();
+                  }
                 } else {
-                  _cargarOtraVezLosPokemons();
+                  if (_mostrandoFavoritos) {
+                    if (_tipoSeleccionado != null) {
+                      _filtrarFavoritosPorTipo(_tipoSeleccionado);
+                    } else {
+                      _cargarPokemonsFavoritos();
+                    }
+                  } else {
+                    _cargarOtraVezLosPokemons();
+                  }
                 }
               });
             },
@@ -344,7 +404,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 _tipoSeleccionado = null;
               });
               if (_mostrandoFavoritos) {
-                _cargarOtraVezLosPokemons();
+                if (_ordenAlfabetico) {
+                  setState(() {
+                    _offset = 0;
+                    _pokemons.clear();
+                    _mostrandoFavoritos = false;
+                  });
+                  _cargarPokemonsAlfabeticamente();
+                } else {
+                  _cargarOtraVezLosPokemons();
+                }
               } else {
                 _cargarPokemonsFavoritos();
               }
