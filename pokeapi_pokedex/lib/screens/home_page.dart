@@ -239,35 +239,31 @@ class _MyHomePageState extends State<MyHomePage> {
       _cargandoPokemons = true;
     });
 
-    late final Pokemon pokemon;
+    try {
+      final pokemon = await PokeAPI.obtenerPokemonAleatorio();
 
-    while (true) {
-      try {
-        final randomId = (DateTime.now().millisecondsSinceEpoch % 1500) + 1;
-        pokemon = await PokeAPI.obtenerPokemonPorId(randomId);
-        break;
-      } catch (error) {
-        continue;
-      }
-    }
-
-    if (mounted) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PokemonStatsPage(
-            name: pokemon.name,
-            toggleTheme: widget.toggleTheme,
-            isDarkMode: widget.isDarkMode,
-            pokemonPreCargado: pokemon,
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PokemonStatsPage(
+              name: pokemon.name,
+              toggleTheme: widget.toggleTheme,
+              isDarkMode: widget.isDarkMode,
+              pokemonPreCargado: pokemon,
+            ),
           ),
-        ),
-      );
-    }
+        );
+      }
 
-    setState(() {
-      _cargandoPokemons = false;
-    });
+      setState(() {
+        _cargandoPokemons = false;
+      });
+    } catch (error) {
+      setState(() {
+        _cargandoPokemons = false;
+      });
+    }
   }
 
   Future<void> _cargarPokemonsAlfabeticamente() async {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:pokeapi_pokedex/modelos/pokemon.dart';
 
@@ -183,67 +184,32 @@ class PokeAPI {
     }
   }
 
-  static Future<Pokemon> obtenerPokemonPorId(int id) async {
+  static Future<Pokemon> obtenerPokemonAleatorio() async {
     final url = 'https://beta.pokeapi.co/graphql/v1beta';
-    final query = '''
-      query pokemonPorId(\$id: Int!) {
-        pokemon_v2_pokemon_by_pk(id: \$id) {
+
+    final nombresQuery = '''
+      query obtenerNombres {
+        pokemon_v2_pokemon(limit: 1500) {
           name
-          id
-          height
-          weight
-          pokemon_v2_pokemontypes {
-            pokemon_v2_type {
-              name
-            }
-          }
-          pokemon_v2_pokemonstats {
-            base_stat
-            pokemon_v2_stat {
-              name
-            }
-          }
         }
       }
     ''';
 
-    final response = await http.post(
+    final nombresResponse = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'query': query,
-        'variables': {'id': id}
+        'query': nombresQuery,
       }),
     );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final pokemon = data['data']['pokemon_v2_pokemon_by_pk'];
+    final nombresData = json.decode(nombresResponse.body);
+    final listaNombres = nombresData['data']['pokemon_v2_pokemon'] as List;
 
-      if (pokemon == null) {
-        throw Exception('No se encontró el Pokémon con ID $id');
-      }
+    final random = Random();
+    final nombreAleatorio =
+        listaNombres[random.nextInt(listaNombres.length)]['name'];
 
-      return Pokemon(
-        name: pokemon['name'],
-        imageUrl:
-            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png',
-        height: pokemon['height'],
-        weight: pokemon['weight'],
-        types: (pokemon['pokemon_v2_pokemontypes'] as List)
-            .map((type) => type['pokemon_v2_type']['name'].toString())
-            .toList(),
-        stats: Map.fromEntries(
-          (pokemon['pokemon_v2_pokemonstats'] as List).map(
-            (stat) => MapEntry(
-              stat['pokemon_v2_stat']['name'],
-              stat['base_stat'] as int,
-            ),
-          ),
-        ),
-      );
-    } else {
-      throw Exception('Error al cargar los datos del Pokémon');
-    }
+    return await obtenerDetallesPokemon(nombreAleatorio);
   }
 }
