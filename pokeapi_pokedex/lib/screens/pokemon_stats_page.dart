@@ -115,6 +115,18 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
                     _pokemon!.imageUrl,
                     width: 200,
                     fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: 200,
+                        height: 200,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                        child: Icon(Icons.error,
+                            size: 50,
+                            color: Theme.of(context).colorScheme.error),
+                      );
+                    },
                   ),
                   Text(
                     _pokemon!.name.toUpperCase(),
