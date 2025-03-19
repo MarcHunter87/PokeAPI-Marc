@@ -9,12 +9,14 @@ class PokemonGridCard extends StatefulWidget {
   final Pokemon pokemon;
   final Function toggleTheme;
   final bool isDarkMode;
+  final Function(String)? onFavoriteRemoved;
 
   const PokemonGridCard({
     super.key,
     required this.pokemon,
     required this.toggleTheme,
     required this.isDarkMode,
+    this.onFavoriteRemoved,
   });
 
   @override
@@ -41,6 +43,9 @@ class _PokemonGridCardState extends State<PokemonGridCard> {
   Future<void> _toggleFavorite() async {
     if (_esFavorito) {
       await PokemonsFavoritos.eliminarPokemonFavorito(widget.pokemon.name);
+      if (widget.onFavoriteRemoved != null) {
+        widget.onFavoriteRemoved!(widget.pokemon.name);
+      }
     } else {
       await PokemonsFavoritos.agregarPokemonFavorito(widget.pokemon);
     }

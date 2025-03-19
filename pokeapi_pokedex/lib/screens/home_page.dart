@@ -338,6 +338,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _eliminarPokemonDeFavoritos(String nombrePokemon) {
+    if (_mostrandoFavoritos) {
+      setState(() {
+        _pokemons.removeWhere((pokemon) => pokemon.name == nombrePokemon);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -498,6 +506,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   pokemon: pokemon,
                                   toggleTheme: widget.toggleTheme,
                                   isDarkMode: widget.isDarkMode,
+                                  onFavoriteRemoved:
+                                      _eliminarPokemonDeFavoritos,
                                 );
                               }
                               return const Padding(
@@ -518,6 +528,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   pokemon: pokemon,
                                   toggleTheme: widget.toggleTheme,
                                   isDarkMode: widget.isDarkMode,
+                                  onFavoriteRemoved:
+                                      _eliminarPokemonDeFavoritos,
                                 );
                               }
                               return const Padding(
