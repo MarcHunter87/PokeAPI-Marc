@@ -526,6 +526,9 @@ class _MyHomePageState extends State<MyHomePage> {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
+                border: !widget.isDarkMode
+                    ? Border.all(color: Colors.black, width: 1)
+                    : null,
               ),
               child: Text(
                 'No hay conexión a Internet. Una vez regrese volverá a funcionar la Pokedex',
