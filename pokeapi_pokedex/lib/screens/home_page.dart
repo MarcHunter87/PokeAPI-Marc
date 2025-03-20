@@ -8,6 +8,7 @@ import 'package:pokeapi_pokedex/servicios/pokemons_favoritos.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_type_filter.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_type_icon.dart';
 import 'package:pokeapi_pokedex/screens/pokemon_stats_page.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class MyHomePage extends StatefulWidget {
   final Function toggleTheme;
@@ -37,10 +38,27 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _ordenAlfabetico = false;
   String _letraActual = 'a';
   final List<String> _letras = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  bool _sinConexion = false;
 
   @override
   void initState() {
     super.initState();
+    _verificarConexion();
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        setState(() {
+          _sinConexion = true;
+          _pokemons = [];
+        });
+      } else if (_sinConexion) {
+        setState(() => _sinConexion = false);
+        if (_queryDeBusqueda.isNotEmpty) {
+          _buscarPokemons(_queryDeBusqueda);
+        } else {
+          _cargarOtraVezLosPokemons();
+        }
+      }
+    });
     _cargarPokemons();
     _controladorScroll.addListener(() {
       if (_controladorScroll.position.pixels >=
@@ -54,6 +72,12 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       }
     });
+  }
+
+  Future<void> _verificarConexion() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    setState(
+        () => _sinConexion = connectivityResult == ConnectivityResult.none);
   }
 
   Future<void> _cargarPokemons() async {
@@ -456,7 +480,7 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             scrollController: _controladorScroll,
           ),
-          if (_queryDeBusqueda.isEmpty)
+          if (_queryDeBusqueda.isEmpty && !_sinConexion)
             PokemonTypeFilter(
               tipoSeleccionado: _tipoSeleccionado,
               onTipoSeleccionado: _filtrarPorTipo,
@@ -480,7 +504,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           if (_pokemons.isEmpty &&
               !_mostrandoFavoritos &&
-              _queryDeBusqueda.isNotEmpty)
+              _queryDeBusqueda.isNotEmpty &&
+              !_sinConexion)
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -490,6 +515,20 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               child: Text(
                 'No se encontraron Pokémons que empiecen con "$_queryDeBusqueda"',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          if (_sinConexion && _pokemons.isEmpty)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'No hay conexión a Internet. Una vez regrese volverá a funcionar la Pokedex',
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),

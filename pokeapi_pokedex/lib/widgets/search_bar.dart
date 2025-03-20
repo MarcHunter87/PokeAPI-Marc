@@ -12,7 +12,9 @@ class PokemonSearchBar extends StatelessWidget {
 
   void _handleSearch(String value) {
     onSearch(value);
-    scrollController.jumpTo(0);
+    if (scrollController.hasClients) {
+      scrollController.jumpTo(0);
+    }
   }
 
   @override
