@@ -32,6 +32,14 @@ class _PokemonCardState extends State<PokemonCard> {
     _actualizarEstadoFavorito();
   }
 
+  @override
+  void didUpdateWidget(PokemonCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.pokemon.name != widget.pokemon.name) {
+      _actualizarEstadoFavorito();
+    }
+  }
+
   Future<void> _actualizarEstadoFavorito() async {
     final esFav =
         await PokemonsFavoritos.comprobarSiEsFavorito(widget.pokemon.name);
