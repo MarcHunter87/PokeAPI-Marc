@@ -4,10 +4,10 @@ import 'package:pokeapi_pokedex/servicios/pokeapi.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_card.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_grid_card.dart';
 import 'package:pokeapi_pokedex/widgets/search_bar.dart';
+import 'package:pokeapi_pokedex/servicios/pokemons_favoritos.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_type_filter.dart';
 import 'package:pokeapi_pokedex/widgets/pokemon_type_icon.dart';
 import 'package:pokeapi_pokedex/screens/pokemon_stats_page.dart';
-import 'package:pokeapi_pokedex/screens/favoritos_page.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -34,6 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String? _tipoSeleccionado;
   final ScrollController _controladorScroll = ScrollController();
   bool _vistaEnCuadricula = false;
+  bool _mostrandoFavoritos = false;
   bool _ordenAlfabetico = false;
   String _letraActual = 'a';
   final List<String> _letras = 'abcdefghijklmnopqrstuvwxyz'.split('');
@@ -66,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
           !_cargandoMasPokemons) {
         if (_ordenAlfabetico) {
           _cargarSiguienteLetra();
-        } else if (_queryDeBusqueda.isEmpty) {
+        } else if (_queryDeBusqueda.isEmpty && !_mostrandoFavoritos) {
           _cargarMasPokemons();
         }
       }
@@ -75,9 +76,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _verificarConexion() async {
     final connectivityResult = await Connectivity().checkConnectivity();
-    setState(() {
-      _sinConexion = connectivityResult == ConnectivityResult.none;
-    });
+    setState(
+        () => _sinConexion = connectivityResult == ConnectivityResult.none);
   }
 
   Future<void> _cargarPokemons() async {
@@ -106,8 +106,40 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _cargarPokemonsFavoritos() async {
+    setState(() {
+      _cargandoPokemons = true;
+      _mostrandoFavoritos = true;
+      _tipoSeleccionado = null;
+      _queryDeBusqueda = "";
+      _pokemons = [];
+    });
+
+    try {
+      final favoritos = await PokemonsFavoritos.obtenerPokemonsFavoritos();
+
+      if (_ordenAlfabetico) {
+        favoritos.sort((a, b) => a.name.compareTo(b.name));
+      }
+
+      if (mounted) {
+        setState(() {
+          _pokemons = favoritos;
+          _cargandoPokemons = false;
+        });
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() {
+          _cargandoPokemons = false;
+          _mostrandoFavoritos = false;
+        });
+      }
+    }
+  }
+
   Future<void> _cargarMasPokemons() async {
-    if (_cargandoMasPokemons) return;
+    if (_cargandoMasPokemons || _mostrandoFavoritos) return;
 
     setState(() {
       _cargandoMasPokemons = true;
@@ -140,6 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _offset = 0;
       _pokemons.clear();
+      _mostrandoFavoritos = false;
     });
 
     if (_ordenAlfabetico) {
@@ -157,6 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       _cargandoPokemons = true;
+      _mostrandoFavoritos = false;
       _tipoSeleccionado = null;
     });
 
@@ -176,7 +210,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void _filtrarPorTipo(String? tipo) {
     setState(() {
       _tipoSeleccionado = tipo;
-      if (_ordenAlfabetico) {
+      if (_mostrandoFavoritos) {
+        _filtrarFavoritosPorTipo(tipo);
+      } else if (_ordenAlfabetico) {
         _pokemons.clear();
         if (tipo == null) {
           _cargarPokemonsAlfabeticamente();
@@ -190,6 +226,36 @@ class _MyHomePageState extends State<MyHomePage> {
         _cargarPokemons();
       }
     });
+  }
+
+  Future<void> _filtrarFavoritosPorTipo(String? tipo) async {
+    if (tipo == null) {
+      _cargarPokemonsFavoritos();
+      return;
+    }
+
+    setState(() {
+      _cargandoPokemons = true;
+    });
+
+    try {
+      final favoritos = await PokemonsFavoritos.obtenerPokemonsFavoritos();
+      final pokemonsFiltrados =
+          favoritos.where((pokemon) => pokemon.types.contains(tipo)).toList();
+
+      if (_ordenAlfabetico) {
+        pokemonsFiltrados.sort((a, b) => a.name.compareTo(b.name));
+      }
+
+      setState(() {
+        _pokemons = pokemonsFiltrados;
+        _cargandoPokemons = false;
+      });
+    } catch (error) {
+      setState(() {
+        _cargandoPokemons = false;
+      });
+    }
   }
 
   Future<void> _mostrarPokemonAleatorio() async {
@@ -292,6 +358,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _eliminarPokemonDeFavoritos(String nombrePokemon) {
+    if (_mostrandoFavoritos) {
+      setState(() {
+        _pokemons.removeWhere((pokemon) => pokemon.name == nombrePokemon);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -323,32 +397,54 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 _ordenAlfabetico = !_ordenAlfabetico;
                 if (_ordenAlfabetico) {
-                  if (_tipoSeleccionado != null) {
+                  if (_mostrandoFavoritos) {
+                    if (_tipoSeleccionado != null) {
+                      _filtrarFavoritosPorTipo(_tipoSeleccionado);
+                    } else {
+                      _cargarPokemonsFavoritos();
+                    }
+                  } else if (_tipoSeleccionado != null) {
                     _cargarPokemonsPorTipoAlfabeticamente(_tipoSeleccionado!);
                   } else {
                     _cargarPokemonsAlfabeticamente();
                   }
                 } else {
-                  _cargarOtraVezLosPokemons();
+                  if (_mostrandoFavoritos) {
+                    if (_tipoSeleccionado != null) {
+                      _filtrarFavoritosPorTipo(_tipoSeleccionado);
+                    } else {
+                      _cargarPokemonsFavoritos();
+                    }
+                  } else {
+                    _cargarOtraVezLosPokemons();
+                  }
                 }
               });
             },
           ),
           IconButton(
-            icon: const Icon(
-              Icons.favorite,
+            icon: Icon(
+              _mostrandoFavoritos ? Icons.favorite : Icons.favorite_border,
               color: Colors.white,
             ),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FavoritosPage(
-                    toggleTheme: widget.toggleTheme,
-                    isDarkMode: widget.isDarkMode,
-                  ),
-                ),
-              );
+              setState(() {
+                _tipoSeleccionado = null;
+              });
+              if (_mostrandoFavoritos) {
+                if (_ordenAlfabetico) {
+                  setState(() {
+                    _offset = 0;
+                    _pokemons.clear();
+                    _mostrandoFavoritos = false;
+                  });
+                  _cargarPokemonsAlfabeticamente();
+                } else {
+                  _cargarOtraVezLosPokemons();
+                }
+              } else {
+                _cargarPokemonsFavoritos();
+              }
             },
           ),
           IconButton(
@@ -390,7 +486,26 @@ class _MyHomePageState extends State<MyHomePage> {
               onTipoSeleccionado: _filtrarPorTipo,
               isDarkMode: widget.isDarkMode,
             ),
-          if (_pokemons.isEmpty && _queryDeBusqueda.isNotEmpty && !_sinConexion)
+          if (_pokemons.isEmpty && _mostrandoFavoritos)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                _tipoSeleccionado != null
+                    ? 'No tienes Pokémons de tipo ${PokemonTypeIcon.tiposTraducidos[_tipoSeleccionado]?.toLowerCase() ?? _tipoSeleccionado} guardados en favoritos'
+                    : 'No tienes Pokémons guardados en favoritos',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          if (_pokemons.isEmpty &&
+              !_mostrandoFavoritos &&
+              _queryDeBusqueda.isNotEmpty &&
+              !_sinConexion)
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -431,7 +546,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             controller: _controladorScroll,
                             padding: const EdgeInsets.all(8),
                             gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               childAspectRatio: 0.85,
                               crossAxisSpacing: 8,
@@ -446,6 +561,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   pokemon: pokemon,
                                   toggleTheme: widget.toggleTheme,
                                   isDarkMode: widget.isDarkMode,
+                                  onFavoriteRemoved:
+                                      _eliminarPokemonDeFavoritos,
                                 );
                               }
                               return const Padding(
@@ -466,6 +583,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   pokemon: pokemon,
                                   toggleTheme: widget.toggleTheme,
                                   isDarkMode: widget.isDarkMode,
+                                  onFavoriteRemoved:
+                                      _eliminarPokemonDeFavoritos,
                                 );
                               }
                               return const Padding(
