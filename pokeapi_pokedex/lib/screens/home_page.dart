@@ -308,7 +308,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final pokemon = await PokeAPI.obtenerPokemonAleatorio();
 
       if (mounted) {
-        Navigator.push(
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => PokemonStatsPage(
@@ -319,6 +319,14 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         );
+
+        if (_ordenAlfabetico) {
+          await _cargarPokemonsAlfabeticamente();
+        } else if (_tipoSeleccionado != null) {
+          await _cargarPokemonsPorTipoAlfabeticamente(_tipoSeleccionado!);
+        } else {
+          await _cargarOtraVezLosPokemons();
+        }
       }
 
       setState(() {
