@@ -487,7 +487,12 @@ class _MyHomePageState extends State<MyHomePage> {
               Icons.shuffle,
               color: Colors.white,
             ),
-            onPressed: _mostrarPokemonAleatorio,
+            onPressed: () {
+              setState(() {
+                _queryDeBusqueda = "";
+              });
+              _mostrarPokemonAleatorio();
+            },
           ),
           IconButton(
             icon: Icon(
@@ -497,6 +502,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               setState(() {
                 _ordenAlfabetico = !_ordenAlfabetico;
+                _queryDeBusqueda = "";
                 if (_ordenAlfabetico) {
                   if (_mostrandoFavoritos) {
                     if (_tipoSeleccionado != null) {
@@ -529,6 +535,9 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.white,
             ),
             onPressed: () {
+              setState(() {
+                _queryDeBusqueda = "";
+              });
               if (_mostrandoFavoritos) {
                 setState(() {
                   _tipoSeleccionado = null;
@@ -580,6 +589,7 @@ class _MyHomePageState extends State<MyHomePage> {
               _buscarPokemons(value);
             },
             scrollController: _controladorScroll,
+            searchText: _queryDeBusqueda,
           ),
           if (_queryDeBusqueda.isEmpty && !_sinConexion)
             PokemonTypeFilter(

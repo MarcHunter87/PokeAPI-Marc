@@ -1,19 +1,48 @@
 import 'package:flutter/material.dart';
 
-class PokemonSearchBar extends StatelessWidget {
+class PokemonSearchBar extends StatefulWidget {
   final Function(String) onSearch;
   final ScrollController scrollController;
+  final String searchText;
 
   const PokemonSearchBar({
     super.key,
     required this.onSearch,
     required this.scrollController,
+    required this.searchText,
   });
 
+  @override
+  State<PokemonSearchBar> createState() => _PokemonSearchBarState();
+}
+
+class _PokemonSearchBarState extends State<PokemonSearchBar> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.searchText);
+  }
+
+  @override
+  void didUpdateWidget(PokemonSearchBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.searchText != _controller.text) {
+      _controller.text = widget.searchText;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   void _handleSearch(String value) {
-    onSearch(value);
-    if (scrollController.hasClients) {
-      scrollController.jumpTo(0);
+    widget.onSearch(value);
+    if (widget.scrollController.hasClients) {
+      widget.scrollController.jumpTo(0);
     }
   }
 
@@ -22,6 +51,7 @@ class PokemonSearchBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: TextField(
+        controller: _controller,
         decoration: InputDecoration(
           hintText: 'Buscar Pokémons',
           hintStyle: TextStyle(color: Theme.of(context).hintColor),
