@@ -48,13 +48,15 @@ class _MyHomePageState extends State<MyHomePage> {
       if (result == ConnectivityResult.none) {
         setState(() {
           _sinConexion = true;
-          _pokemons = [];
+          if (!_mostrandoFavoritos) {
+            _pokemons = [];
+          }
         });
       } else if (_sinConexion) {
         setState(() => _sinConexion = false);
-        if (_queryDeBusqueda.isNotEmpty) {
+        if (_queryDeBusqueda.isNotEmpty && !_mostrandoFavoritos) {
           _buscarPokemons(_queryDeBusqueda);
-        } else {
+        } else if (!_mostrandoFavoritos) {
           _cargarOtraVezLosPokemons();
         }
       }
@@ -76,8 +78,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _verificarConexion() async {
     final connectivityResult = await Connectivity().checkConnectivity();
-    setState(
-        () => _sinConexion = connectivityResult == ConnectivityResult.none);
+    setState(() {
+      _sinConexion = connectivityResult == ConnectivityResult.none;
+    });
   }
 
   Future<void> _cargarPokemons() async {
@@ -438,9 +441,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     _pokemons.clear();
                     _mostrandoFavoritos = false;
                   });
-                  _cargarPokemonsAlfabeticamente();
-                } else {
+                  if (!_sinConexion) {
+                    _cargarPokemonsAlfabeticamente();
+                  }
+                } else if (!_sinConexion) {
                   _cargarOtraVezLosPokemons();
+                } else {
+                  setState(() {
+                    _mostrandoFavoritos = false;
+                  });
                 }
               } else {
                 _cargarPokemonsFavoritos();
@@ -519,7 +528,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 textAlign: TextAlign.center,
               ),
             ),
-          if (_sinConexion && _pokemons.isEmpty)
+          if (_sinConexion && _pokemons.isEmpty && !_mostrandoFavoritos)
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
