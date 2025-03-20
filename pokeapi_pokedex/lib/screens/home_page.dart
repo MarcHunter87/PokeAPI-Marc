@@ -652,8 +652,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ? const Center(
                     child: Image(
                       image: AssetImage('assets/images/loading.gif'),
-                      width: 80,
-                      height: 80,
+                      width: 300,
+                      height: 300,
                     ),
                   )
                 : RefreshIndicator(
@@ -688,8 +688,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   child: Image(
                                     image:
                                         AssetImage('assets/images/loading.gif'),
-                                    width: 60,
-                                    height: 60,
+                                    width: 80,
+                                    height: 80,
                                   ),
                                 ),
                               );
@@ -716,8 +716,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   child: Image(
                                     image:
                                         AssetImage('assets/images/loading.gif'),
-                                    width: 60,
-                                    height: 60,
+                                    width: 80,
+                                    height: 80,
                                   ),
                                 ),
                               );

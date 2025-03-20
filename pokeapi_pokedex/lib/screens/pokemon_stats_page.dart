@@ -118,8 +118,8 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
           ? const Center(
               child: Image(
                 image: AssetImage('assets/images/loading.gif'),
-                width: 80,
-                height: 80,
+                width: 300,
+                height: 300,
               ),
             )
           : SingleChildScrollView(
