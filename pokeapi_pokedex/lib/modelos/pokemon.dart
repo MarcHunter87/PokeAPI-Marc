@@ -4,7 +4,7 @@ class Pokemon {
   final int? height;
   final int? weight;
   List<String> types;
-  final Map<String, int>? stats;
+  Map<String, int>? stats;
 
   Pokemon({
     required this.name,
@@ -25,6 +25,14 @@ class Pokemon {
       name: name,
       imageUrl: imageUrl,
       types: [],
+      stats: {
+        'hp': 0,
+        'attack': 0,
+        'defense': 0,
+        'special-attack': 0,
+        'special-defense': 0,
+        'speed': 0
+      },
     );
   }
 }

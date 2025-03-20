@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pokeapi_pokedex/modelos/pokemon.dart';
-import 'package:pokeapi_pokedex/servicios/pokeapi.dart';
 import 'package:pokeapi_pokedex/servicios/notification_service.dart';
+import 'package:pokeapi_pokedex/servicios/pokeapi.dart';
 
 class PokemonsFavoritos {
   static const String _key = 'favorite_pokemons';
@@ -13,53 +12,88 @@ class PokemonsFavoritos {
     final String? pokemonsJson = prefs.getString(_key);
     if (pokemonsJson == null) return [];
 
-    final List<dynamic> nombresPokemon = jsonDecode(pokemonsJson);
-    final List<Pokemon> pokemons = [];
-
-    for (var nombre in nombresPokemon) {
-      try {
-        final pokemon = await PokeAPI.obtenerDetallesPokemon(nombre);
-        pokemons.add(pokemon);
-      } catch (e) {
-        continue;
+    final List<dynamic> pokemonsData = jsonDecode(pokemonsJson);
+    return pokemonsData.map((data) {
+      Map<String, int>? stats;
+      if (data['stats'] != null) {
+        stats = Map<String, int>.from(data['stats']
+            .map((key, value) => MapEntry(key.toString(), value as int)));
       }
-    }
-    return pokemons;
+
+      return Pokemon(
+        name: data['name'],
+        imageUrl: data['imageUrl'],
+        height: data['height'],
+        weight: data['weight'],
+        types: List<String>.from(data['types']),
+        stats: stats ??
+            {
+              'hp': 0,
+              'attack': 0,
+              'defense': 0,
+              'special-attack': 0,
+              'special-defense': 0,
+              'speed': 0
+            },
+      );
+    }).toList();
   }
 
   static Future<void> agregarPokemonFavorito(Pokemon pokemon) async {
     final prefs = await SharedPreferences.getInstance();
-    final List<String> favoritos = await _obtenerNombresFavoritos();
+    final List<Pokemon> favoritos = await obtenerPokemonsFavoritos();
 
-    if (!favoritos.contains(pokemon.name)) {
-      favoritos.add(pokemon.name);
-      final String encoded = jsonEncode(favoritos);
-      await prefs.setString(_key, encoded);
+    if (!favoritos.any((p) => p.name == pokemon.name)) {
+      try {
+        final pokemonCompleto =
+            await PokeAPI.obtenerDetallesPokemon(pokemon.name);
+        favoritos.add(pokemonCompleto);
 
-      NotificationService.mostrarNotificacionPokemonFavorito(pokemon.name);
+        final List<Map<String, dynamic>> pokemonsData = favoritos
+            .map((p) => {
+                  'name': p.name,
+                  'imageUrl': p.imageUrl,
+                  'height': p.height,
+                  'weight': p.weight,
+                  'types': p.types,
+                  'stats': p.stats,
+                })
+            .toList();
+
+        final String encoded = jsonEncode(pokemonsData);
+        await prefs.setString(_key, encoded);
+
+        NotificationService.mostrarNotificacionPokemonFavorito(pokemon.name);
+      } catch (e) {
+        throw Exception(
+            'Error al obtener los detalles del Pokémon para guardarlo en favoritos');
+      }
     }
   }
 
   static Future<void> eliminarPokemonFavorito(String nombrePokemon) async {
     final prefs = await SharedPreferences.getInstance();
-    final List<String> favoritos = await _obtenerNombresFavoritos();
+    final List<Pokemon> favoritos = await obtenerPokemonsFavoritos();
 
-    favoritos.remove(nombrePokemon);
-    final String encoded = jsonEncode(favoritos);
+    favoritos.removeWhere((p) => p.name == nombrePokemon);
+
+    final List<Map<String, dynamic>> pokemonsData = favoritos
+        .map((p) => {
+              'name': p.name,
+              'imageUrl': p.imageUrl,
+              'height': p.height,
+              'weight': p.weight,
+              'types': p.types,
+              'stats': p.stats,
+            })
+        .toList();
+
+    final String encoded = jsonEncode(pokemonsData);
     await prefs.setString(_key, encoded);
   }
 
   static Future<bool> comprobarSiEsFavorito(String nombrePokemon) async {
-    final List<String> favoritos = await _obtenerNombresFavoritos();
-    return favoritos.contains(nombrePokemon);
-  }
-
-  static Future<List<String>> _obtenerNombresFavoritos() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? pokemonsJson = prefs.getString(_key);
-    if (pokemonsJson == null) return [];
-
-    List<dynamic> nombresPokemon = jsonDecode(pokemonsJson);
-    return nombresPokemon.map((item) => item.toString()).toList();
+    final List<Pokemon> favoritos = await obtenerPokemonsFavoritos();
+    return favoritos.any((p) => p.name == nombrePokemon);
   }
 }

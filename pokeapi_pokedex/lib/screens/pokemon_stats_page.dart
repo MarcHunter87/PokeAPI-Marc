@@ -236,63 +236,76 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
                         ),
                   ),
                   const SizedBox(height: 8),
-                  ..._pokemon!.stats!.entries.map((stat) => Container(
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color:
-                                Theme.of(context).brightness == Brightness.light
+                  ...(_pokemon?.stats ??
+                          {
+                            'hp': 0,
+                            'attack': 0,
+                            'defense': 0,
+                            'special-attack': 0,
+                            'special-defense': 0,
+                            'speed': 0
+                          })
+                      .entries
+                      .map((stat) => Container(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.light
                                     ? Theme.of(context).dividerColor
                                     : Colors.transparent,
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  _traducirNombreEstadisticas(stat.key),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      _traducirNombreEstadisticas(stat.key),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                    ),
+                                    Text(
+                                      stat.value.toString(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  stat.value.toString(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                const SizedBox(height: 4),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: LinearProgressIndicator(
+                                    value: stat.value / 255,
+                                    backgroundColor:
+                                        Theme.of(context).brightness ==
+                                                Brightness.light
+                                            ? Colors.grey[200]
+                                            : Colors.grey[800],
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        _conseguirColorEstadisticas(
+                                            stat.value)),
+                                    minHeight: 8,
+                                  ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 4),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
-                              child: LinearProgressIndicator(
-                                value: stat.value / 255,
-                                backgroundColor: Theme.of(context).brightness ==
-                                        Brightness.light
-                                    ? Colors.grey[200]
-                                    : Colors.grey[800],
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    _conseguirColorEstadisticas(stat.value)),
-                                minHeight: 8,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
+                          )),
                 ],
               ),
             ),
