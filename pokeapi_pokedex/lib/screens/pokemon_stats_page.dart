@@ -49,6 +49,17 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
       setState(() {
         _isLoading = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString(),
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: widget.isDarkMode ? Colors.grey[800] : Colors.red,
+        ),
+      );
     }
   }
 

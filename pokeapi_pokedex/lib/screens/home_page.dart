@@ -106,6 +106,19 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _cargandoPokemons = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.toString(),
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: widget.isDarkMode
+              ? const Color.fromRGBO(66, 66, 66, 1)
+              : Colors.red,
+        ),
+      );
     }
   }
 
@@ -168,6 +181,19 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _cargandoMasPokemons = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.toString(),
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: widget.isDarkMode
+              ? const Color.fromRGBO(66, 66, 66, 1)
+              : Colors.red,
+        ),
+      );
     }
   }
 
@@ -207,6 +233,19 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _cargandoPokemons = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.toString(),
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: widget.isDarkMode
+              ? const Color.fromRGBO(66, 66, 66, 1)
+              : Colors.red,
+        ),
+      );
     }
   }
 
@@ -258,6 +297,19 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _cargandoPokemons = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.toString(),
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: widget.isDarkMode
+              ? const Color.fromRGBO(66, 66, 66, 1)
+              : Colors.red,
+        ),
+      );
     }
   }
 
@@ -290,6 +342,17 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _cargandoPokemons = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.toString(),
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: widget.isDarkMode ? Colors.grey[800] : Colors.red,
+        ),
+      );
     }
   }
 
@@ -309,6 +372,19 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _cargandoPokemons = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.toString(),
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: widget.isDarkMode
+              ? const Color.fromRGBO(66, 66, 66, 1)
+              : Colors.red,
+        ),
+      );
     }
   }
 
@@ -337,6 +413,19 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _cargandoMasPokemons = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.toString(),
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: widget.isDarkMode
+              ? const Color.fromRGBO(66, 66, 66, 1)
+              : Colors.red,
+        ),
+      );
     }
   }
 
@@ -358,6 +447,19 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _cargandoPokemons = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.toString(),
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: widget.isDarkMode
+              ? const Color.fromRGBO(66, 66, 66, 1)
+              : Colors.red,
+        ),
+      );
     }
   }
 
