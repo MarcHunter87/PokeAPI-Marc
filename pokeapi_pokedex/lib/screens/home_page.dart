@@ -649,7 +649,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           Expanded(
             child: _cargandoPokemons
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(
+                    child: Image(
+                      image: AssetImage('assets/images/loading.gif'),
+                      width: 80,
+                      height: 80,
+                    ),
+                  )
                 : RefreshIndicator(
                     onRefresh: _cargarOtraVezLosPokemons,
                     child: _vistaEnCuadricula
@@ -678,8 +684,14 @@ class _MyHomePageState extends State<MyHomePage> {
                               }
                               return const Padding(
                                 padding: EdgeInsets.symmetric(vertical: 16),
-                                child:
-                                    Center(child: CircularProgressIndicator()),
+                                child: Center(
+                                  child: Image(
+                                    image:
+                                        AssetImage('assets/images/loading.gif'),
+                                    width: 60,
+                                    height: 60,
+                                  ),
+                                ),
                               );
                             },
                           )
@@ -700,8 +712,14 @@ class _MyHomePageState extends State<MyHomePage> {
                               }
                               return const Padding(
                                 padding: EdgeInsets.symmetric(vertical: 16),
-                                child:
-                                    Center(child: CircularProgressIndicator()),
+                                child: Center(
+                                  child: Image(
+                                    image:
+                                        AssetImage('assets/images/loading.gif'),
+                                    width: 60,
+                                    height: 60,
+                                  ),
+                                ),
                               );
                             },
                           ),

@@ -116,7 +116,11 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
       ),
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(),
+              child: Image(
+                image: AssetImage('assets/images/loading.gif'),
+                width: 80,
+                height: 80,
+              ),
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.only(right: 16, left: 16, bottom: 15),
