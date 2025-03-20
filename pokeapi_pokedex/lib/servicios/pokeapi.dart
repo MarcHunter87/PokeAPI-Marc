@@ -50,6 +50,8 @@ class PokeAPI {
   }
 
   static Future<List<Pokemon>> buscarPokemons(String query) async {
+    if (query.isEmpty) return [];
+
     final url = 'https://beta.pokeapi.co/graphql/v1beta';
     final graphQuery = '''
     query buscarPokemons(\$search: String!) {
@@ -65,12 +67,16 @@ class PokeAPI {
     }
   ''';
 
+    final searchPattern = query.length >= 3
+        ? '%${query.toLowerCase()}%'
+        : '${query.toLowerCase()}%';
+
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'query': graphQuery,
-        'variables': {'search': '${query.toLowerCase()}%'},
+        'variables': {'search': searchPattern},
       }),
     );
 
