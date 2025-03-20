@@ -59,7 +59,7 @@ class PokemonsFavoritos {
     final String? pokemonsJson = prefs.getString(_key);
     if (pokemonsJson == null) return [];
 
-    final List<dynamic> nombresPokemon = jsonDecode(pokemonsJson);
-    return nombresPokemon.cast<String>();
+    List<dynamic> nombresPokemon = jsonDecode(pokemonsJson);
+    return nombresPokemon.map((item) => item.toString()).toList();
   }
 }
