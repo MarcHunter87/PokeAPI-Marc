@@ -111,22 +111,25 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
               padding: const EdgeInsets.only(right: 16, left: 16, bottom: 15),
               child: Column(
                 children: [
-                  Image.network(
-                    _pokemon!.imageUrl,
-                    width: 200,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 200,
-                        height: 200,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
-                        child: Icon(Icons.error,
-                            size: 50,
-                            color: Theme.of(context).colorScheme.error),
-                      );
-                    },
+                  Hero(
+                    tag: 'pokemon-image-${_pokemon!.name}',
+                    child: Image.network(
+                      _pokemon!.imageUrl,
+                      width: 200,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 200,
+                          height: 200,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
+                          child: Icon(Icons.error,
+                              size: 50,
+                              color: Theme.of(context).colorScheme.error),
+                        );
+                      },
+                    ),
                   ),
                   Text(
                     _pokemon!.name.toUpperCase(),

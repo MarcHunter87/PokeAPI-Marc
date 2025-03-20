@@ -142,18 +142,21 @@ class _PokemonGridCardState extends State<PokemonGridCard> {
                     const SizedBox(height: 8),
                     Expanded(
                       child: Center(
-                        child: Image.network(
-                          widget.pokemon.imageUrl,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerHighest,
-                              child: Icon(Icons.error,
-                                  color: Theme.of(context).colorScheme.error),
-                            );
-                          },
+                        child: Hero(
+                          tag: 'pokemon-image-${widget.pokemon.name}',
+                          child: Image.network(
+                            widget.pokemon.imageUrl,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHighest,
+                                child: Icon(Icons.error,
+                                    color: Theme.of(context).colorScheme.error),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),

@@ -91,22 +91,25 @@ class _PokemonCardState extends State<PokemonCard> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    widget.pokemon.imageUrl,
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 60,
-                        height: 60,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
-                        child: Icon(Icons.error,
-                            color: Theme.of(context).colorScheme.error),
-                      );
-                    },
+                  child: Hero(
+                    tag: 'pokemon-image-${widget.pokemon.name}',
+                    child: Image.network(
+                      widget.pokemon.imageUrl,
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 60,
+                          height: 60,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
+                          child: Icon(Icons.error,
+                              color: Theme.of(context).colorScheme.error),
+                        );
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
