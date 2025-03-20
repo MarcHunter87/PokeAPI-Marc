@@ -35,9 +35,11 @@ class _PokemonGridCardState extends State<PokemonGridCard> {
   Future<void> _actualizarEstadoFavorito() async {
     final esFav =
         await PokemonsFavoritos.comprobarSiEsFavorito(widget.pokemon.name);
-    setState(() {
-      _esFavorito = esFav;
-    });
+    if (mounted) {
+      setState(() {
+        _esFavorito = esFav;
+      });
+    }
   }
 
   Future<void> _toggleFavorite() async {
@@ -49,9 +51,11 @@ class _PokemonGridCardState extends State<PokemonGridCard> {
     } else {
       await PokemonsFavoritos.agregarPokemonFavorito(widget.pokemon);
     }
-    setState(() {
-      _esFavorito = !_esFavorito;
-    });
+    if (mounted) {
+      setState(() {
+        _esFavorito = !_esFavorito;
+      });
+    }
   }
 
   @override
