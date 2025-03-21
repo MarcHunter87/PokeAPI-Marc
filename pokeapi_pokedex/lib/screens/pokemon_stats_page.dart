@@ -28,11 +28,20 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.pokemonPreCargado != null) {
+    if (widget.pokemonPreCargado != null &&
+        widget.pokemonPreCargado!.stats != null &&
+        widget.pokemonPreCargado!.height != null &&
+        widget.pokemonPreCargado!.weight != null) {
       setState(() {
         _pokemon = widget.pokemonPreCargado;
         _isLoading = false;
       });
+    } else if (widget.pokemonPreCargado != null) {
+      setState(() {
+        _pokemon = widget.pokemonPreCargado;
+        _isLoading = true;
+      });
+      _cargarPokemon();
     } else {
       _cargarPokemon();
     }
@@ -41,25 +50,29 @@ class _PokemonStatsPageState extends State<PokemonStatsPage> {
   Future<void> _cargarPokemon() async {
     try {
       final pokemonObtenido = await PokeAPI.obtenerDetallesPokemon(widget.name);
-      setState(() {
-        _pokemon = pokemonObtenido;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _pokemon = pokemonObtenido;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.toString(),
-            style: const TextStyle(
-              color: Colors.white,
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error al cargar los detalles del Pokémon: ${e.toString()}',
+              style: const TextStyle(
+                color: Colors.white,
+              ),
             ),
+            backgroundColor: widget.isDarkMode ? Colors.grey[800] : Colors.red,
           ),
-          backgroundColor: widget.isDarkMode ? Colors.grey[800] : Colors.red,
-        ),
-      );
+        );
+      }
     }
   }
 

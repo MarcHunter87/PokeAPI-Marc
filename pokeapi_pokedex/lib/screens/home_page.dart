@@ -149,12 +149,15 @@ class _MyHomePageState extends State<MyHomePage> {
       _queryDeBusqueda = "";
     });
 
+    List<Pokemon> pokemonsAMostrar = List.from(_pokemonsFavoritos);
+
     if (_ordenAlfabetico) {
-      _pokemonsFavoritos.sort((a, b) => a.name.compareTo(b.name));
+      pokemonsAMostrar
+          .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     }
 
     setState(() {
-      _pokemons = List.from(_pokemonsFavoritos);
+      _pokemons = pokemonsAMostrar;
       _cargandoPokemons = false;
     });
   }
@@ -169,12 +172,13 @@ class _MyHomePageState extends State<MyHomePage> {
       _cargandoPokemons = true;
     });
 
-    final pokemonsFiltrados = _pokemonsFavoritos
+    List<Pokemon> pokemonsFiltrados = _pokemonsFavoritos
         .where((pokemon) => pokemon.types.contains(tipo))
         .toList();
 
     if (_ordenAlfabetico) {
-      pokemonsFiltrados.sort((a, b) => a.name.compareTo(b.name));
+      pokemonsFiltrados
+          .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     }
 
     setState(() {
